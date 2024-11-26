@@ -1,4 +1,4 @@
-package sistema;
+package guiapp;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,13 +10,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-public class prueba {
+import sistema.PanelClientes;
+import sistema.PanelConfiguracion;
+import sistema.PanelProductos;
+import sistema.PanelProveedor;
+import sistema.PanelVenta;
+
+public class GuiApp {
     JFrame frame;
     private JTabbedPane tabbedPane;
     private JPanel panelLateral;
 
     // Constructor con parámetros para recibir los paneles
-    public prueba(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
+    public GuiApp(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
         initialize(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
     }
 
@@ -116,7 +122,7 @@ public class prueba {
         JPanel panelConfiguracion = new PanelConfiguracion();
 
         // Crear la ventana principal
-        prueba window = new prueba(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
+        GuiApp window = new GuiApp(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
         window.frame.setVisible(true);
     }
 }

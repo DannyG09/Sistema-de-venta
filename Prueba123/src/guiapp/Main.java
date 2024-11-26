@@ -1,6 +1,12 @@
-package sistema;
+package guiapp;
 
 import java.awt.EventQueue;
+
+import sistema.PanelClientes;
+import sistema.PanelConfiguracion;
+import sistema.PanelProductos;
+import sistema.PanelProveedor;
+import sistema.PanelVenta;
 
 public class Main {    
     public static void main(String[] args) {
@@ -15,7 +21,7 @@ public class Main {
                     PanelConfiguracion panelConfiguracion = new PanelConfiguracion(); // Panel de Configuración
                     
                     // Crear la ventana con los paneles apropiados
-                    prueba window = new prueba(panelVenta, panelCliente, panelProducto, panelProveedor, panelConfiguracion);
+                    GuiApp window = new GuiApp(panelVenta, panelCliente, panelProducto, panelProveedor, panelConfiguracion);
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -24,3 +30,4 @@ public class Main {
         });
     }
 }
+
