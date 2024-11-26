@@ -1,276 +1,122 @@
 package sistema;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
-import javax.swing.JTabbedPane;
-import java.awt.Panel;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JTable;
 import java.awt.Font;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class prueba {
-
     JFrame frame;
-    private JTextField textField;
-    private JTextField textField_1;
-    private JTextField textField_2;
-    private JTextField textField_3;
-    private JTextField textField_4;
-    private JTable table;
-    private JTextField textField_5;
-    private JTextField textField_6;
-    private JTextField textField_7;
-    private JTextField textField_8;
-    private JTextField textField_9;
-    private JTextField textField_10;
-    private JTextField textField_11;
-    private JTable table_1;
+    private JTabbedPane tabbedPane;
+    private JPanel panelLateral;
 
-    /**
-     * Launch the application.
-     */
-
-
-    /**
-     * Create the application.
-     */
-    public prueba() {
-        initialize();
+    // Constructor con parámetros para recibir los paneles
+    public prueba(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
+        initialize(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
     }
 
-    /**
-     * Initialize the contents of the frame.
-     */
-    private void initialize() {
+    private void initialize(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
+        // Crear la ventana principal
         frame = new JFrame();
-        frame.setBounds(100, 100, 792, 495);
+        frame.getContentPane().setBackground(new Color(0, 0, 0));
+        frame.setBounds(100, 100, 833, 495);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         // Panel lateral
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(0, 0, 0));
-        panel.setBounds(0, 0, 126, 456);
-        frame.getContentPane().add(panel);
+        panelLateral = new JPanel();
+        panelLateral.setBounds(0, 0, 126, 456);
+        panelLateral.setBackground(new Color(0, 0, 0));
+        panelLateral.setLayout(null);
+        frame.getContentPane().add(panelLateral);
 
-        // Botón Nueva Venta (con un ActionListener agregado)
-        JButton btnNuevaVenta = new JButton(" Venta");
-        btnNuevaVenta.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnNuevaVenta.setBounds(10, 122, 95, 23);
-        btnNuevaVenta.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Acción al hacer clic: Imprimir mensaje en consola
-                System.out.println("Botón 'Nueva Venta' presionado.");
-                // Aquí puedes agregar la funcionalidad real, como abrir una ventana de nueva venta.
-            }
-        });
-        panel.setLayout(null);
-        panel.add(btnNuevaVenta);
-        
-        JButton btnNewButton = new JButton("Clientes");
-        btnNewButton.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnNewButton.setBounds(10, 166, 95, 23);
-        panel.add(btnNewButton);
-        
-        JButton btnNewButton_1 = new JButton("Provedor");
-        btnNewButton_1.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnNewButton_1.setBounds(10, 211, 95, 23);
-        panel.add(btnNewButton_1);
-        
-        JButton btnNewButton_2 = new JButton("Ventas");
-        btnNewButton_2.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnNewButton_2.setBounds(10, 258, 95, 23);
-        panel.add(btnNewButton_2);
-        
-        JLabel lblNewLabel = new JLabel("");
-        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).jpg"));
-        lblNewLabel.setBounds(0, 0, 126, 111);
-        panel.add(lblNewLabel);
+        try {
+            // Ruta de la imagen del logo
+            String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).jpg";
+            ImageIcon iconLogo = new ImageIcon(rutaLogo);
 
-        // Imagen del encabezado
-        JLabel lblEncabezado = new JLabel("");
-        lblEncabezado.setBackground(new Color(0, 0, 0));
-        lblEncabezado.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Captura de pantalla 2024-11-17 195915 (2).png"));
-        lblEncabezado.setBounds(124, 0, 652, 50);
-        frame.getContentPane().add(lblEncabezado);
+            // Escalar la imagen del logo para ajustarse al tamaño del JLabel
+            Image imagenEscalada = iconLogo.getImage().getScaledInstance(126, 111, Image.SCALE_SMOOTH);
+            ImageIcon logoEscalado = new ImageIcon(imagenEscalada);
 
-        // Panel principal con pestañas
-        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setBounds(124, 49, 642, 396);
+            // Crear y configurar el JLabel con el logo
+            JLabel lblLogo = new JLabel();
+            lblLogo.setIcon(logoEscalado);
+            lblLogo.setBounds(0, 0, 126, 111);
+            panelLateral.add(lblLogo);
+
+        } catch (Exception e) {
+            // Mostrar mensaje si ocurre un error cargando el logo
+            JLabel lblError = new JLabel("Logo no disponible");
+            lblError.setForeground(Color.WHITE);
+            lblError.setBounds(10, 10, 100, 20);
+            panelLateral.add(lblError);
+            System.err.println("Error al cargar el logo: " + e.getMessage());
+        }
+
+        // Botón para "Venta"
+        JButton btnVenta = new JButton("Venta");
+        btnVenta.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        btnVenta.setBounds(10, 120, 95, 23);
+        btnVenta.addActionListener(e -> tabbedPane.setSelectedIndex(0)); // Selecciona la pestaña de "Venta"
+        panelLateral.add(btnVenta);
+
+        // Botón para "Clientes"
+        JButton btnClientes = new JButton("Clientes");
+        btnClientes.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        btnClientes.setBounds(10, 160, 95, 23);
+        btnClientes.addActionListener(e -> tabbedPane.setSelectedIndex(1)); // Selecciona la pestaña de "Clientes"
+        panelLateral.add(btnClientes);
+
+        // Botón para "Productos"
+        JButton btnProductos = new JButton("Productos");
+        btnProductos.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        btnProductos.setBounds(10, 200, 95, 23);
+        btnProductos.addActionListener(e -> tabbedPane.setSelectedIndex(2)); // Selecciona la pestaña de "Productos"
+        panelLateral.add(btnProductos);
+
+        // Botón para "Proveedor"
+        JButton btnProveedor = new JButton("Proveedor");
+        btnProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        btnProveedor.setBounds(10, 240, 95, 23);
+        btnProveedor.addActionListener(e -> tabbedPane.setSelectedIndex(3)); // Selecciona la pestaña de "Proveedor"
+        panelLateral.add(btnProveedor);
+
+        // Botón para "Configuración"
+        JButton btnConfiguracion = new JButton("Configuración");
+        btnConfiguracion.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        btnConfiguracion.setBounds(10, 280, 95, 23);
+        btnConfiguracion.addActionListener(e -> tabbedPane.setSelectedIndex(4)); // Selecciona la pestaña de "Configuración"
+        panelLateral.add(btnConfiguracion);
+
+        // Configuración del JTabbedPane
+        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBounds(124, 49, 683, 396);
         frame.getContentPane().add(tabbedPane);
-        
-                // Ejemplo de una pestaña
-                Panel panelTab1 = new Panel();
-                tabbedPane.addTab("Inicio", null, panelTab1, null);
-                panelTab1.setLayout(null);
-                
-                JLabel lblNewLabel_1 = new JLabel("Codigo");
-                lblNewLabel_1.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_1.setBounds(39, 24, 46, 14);
-                panelTab1.add(lblNewLabel_1);
-                
-                JLabel lblNewLabel_2 = new JLabel("Descripcion");
-                lblNewLabel_2.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_2.setBounds(127, 24, 86, 14);
-                panelTab1.add(lblNewLabel_2);
-                
-                JLabel lblNewLabel_3 = new JLabel("Cantidad");
-                lblNewLabel_3.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_3.setBounds(223, 24, 63, 14);
-                panelTab1.add(lblNewLabel_3);
-                
-                JLabel lblNewLabel_4 = new JLabel("Precio");
-                lblNewLabel_4.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_4.setBounds(318, 24, 46, 14);
-                panelTab1.add(lblNewLabel_4);
-                
-                JButton btnNewButton_3 = new JButton("");
-                btnNewButton_3.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\png-transparent-red-x-illustration-red-x-letter-computer-icons-red-x-miscellaneous-angle-text-thumbnail (2).png"));
-                btnNewButton_3.setBounds(520, 34, 46, 31);
-                panelTab1.add(btnNewButton_3);
-                
-                textField = new JTextField();
-                textField.setBounds(17, 49, 86, 20);
-                panelTab1.add(textField);
-                textField.setColumns(10);
-                
-                textField_1 = new JTextField();
-                textField_1.setBounds(113, 49, 86, 20);
-                panelTab1.add(textField_1);
-                textField_1.setColumns(10);
-                
-                textField_2 = new JTextField();
-                textField_2.setBounds(209, 49, 86, 20);
-                panelTab1.add(textField_2);
-                textField_2.setColumns(10);
-                
-                textField_3 = new JTextField();
-                textField_3.setBounds(305, 49, 86, 20);
-                panelTab1.add(textField_3);
-                textField_3.setColumns(10);
-                
-                JLabel lblNewLabel_5 = new JLabel("Stock");
-                lblNewLabel_5.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_5.setBounds(417, 24, 46, 14);
-                panelTab1.add(lblNewLabel_5);
-                
-                textField_4 = new JTextField();
-                textField_4.setBounds(401, 49, 86, 20);
-                panelTab1.add(textField_4);
-                textField_4.setColumns(10);
-                
-                table = new JTable();
-                table.setCellSelectionEnabled(true);
-                table.setToolTipText("");
-                table.setBounds(10, 80, 607, 234);
-                panelTab1.add(table);
-                
-                JLabel lblNewLabel_6 = new JLabel("Cedula:");
-                lblNewLabel_6.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_6.setBounds(51, 325, 46, 14);
-                panelTab1.add(lblNewLabel_6);
-                
-                textField_5 = new JTextField();
-                textField_5.setBounds(17, 348, 106, 20);
-                panelTab1.add(textField_5);
-                textField_5.setColumns(10);
-                
-                JLabel lblNewLabel_7 = new JLabel("Nombre");
-                lblNewLabel_7.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-                lblNewLabel_7.setBounds(199, 325, 46, 14);
-                panelTab1.add(lblNewLabel_7);
-                
-                textField_6 = new JTextField();
-                textField_6.setBounds(149, 348, 137, 20);
-                panelTab1.add(textField_6);
-                textField_6.setColumns(10);
-                
-                JScrollPane scrollPane_1 = new JScrollPane();
-                scrollPane_1.setBounds(17, 80, 600, 23);
-                panelTab1.add(scrollPane_1);
-                
-                
-        
-        Panel panel_1 = new Panel();
-        tabbedPane.addTab("New tab", null, panel_1, null);
-        panel_1.setLayout(null);
-        
-        DefaultTableModel modeloTabla = new DefaultTableModel(new String[]{"ID", "Nombre", "Teléfono", "Dirección", "RNC"}, 0);
-        table_1 = new JTable(modeloTabla);
-        JScrollPane scrollPane = new JScrollPane(table_1);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(276, 49, 329, 202);
-        panel_1.add(scrollPane);
-        
-        JLabel lblNewLabel_8 = new JLabel("Cedula/ID");
-        lblNewLabel_8.setBounds(43, 52, 67, 14);
-        panel_1.add(lblNewLabel_8);
-        
-        JLabel lblNewLabel_9 = new JLabel("Nombre:");
-        lblNewLabel_9.setBounds(42, 97, 46, 14);
-        panel_1.add(lblNewLabel_9);
-        
-        JLabel lblNewLabel_10 = new JLabel("Tèlefono:");
-        lblNewLabel_10.setBounds(42, 144, 46, 14);
-        panel_1.add(lblNewLabel_10);
-        
-        JLabel lblNewLabel_11 = new JLabel("Direccion:");
-        lblNewLabel_11.setBounds(42, 193, 68, 14);
-        panel_1.add(lblNewLabel_11);
-        
-        JLabel lblNewLabel_12 = new JLabel("RNC:");
-        lblNewLabel_12.setBounds(42, 237, 46, 14);
-        panel_1.add(lblNewLabel_12);
-        
-        textField_7 = new JTextField();
-        textField_7.setBounds(117, 49, 120, 20);
-        panel_1.add(textField_7);
-        textField_7.setColumns(10);
-        
-        textField_8 = new JTextField();
-        textField_8.setBounds(117, 94, 120, 20);
-        panel_1.add(textField_8);
-        textField_8.setColumns(10);
-        
-        textField_9 = new JTextField();
-        textField_9.setBounds(117, 141, 120, 20);
-        panel_1.add(textField_9);
-        textField_9.setColumns(10);
-        
-        textField_10 = new JTextField();
-        textField_10.setBounds(117, 190, 120, 20);
-        panel_1.add(textField_10);
-        textField_10.setColumns(10);
-        
-        textField_11 = new JTextField();
-        textField_11.setBounds(117, 234, 120, 20);
-        panel_1.add(textField_11);
-        textField_11.setColumns(10);
-        
-        table_1 = new JTable();
-        table_1.setBounds(276, 49, 329, 202);
-        panel_1.add(table_1);
-        
-     // Modelo de la tabla
-      
-        
-        Panel panel_2 = new Panel();
-        tabbedPane.addTab("New tab", null, panel_2, null);
-        
-        Panel panel_3 = new Panel();
-        tabbedPane.addTab("New tab", null, panel_3, null);
-        
-        Panel panel_4 = new Panel();
-        tabbedPane.addTab("New tab", null, panel_4, null);
+
+        // Agregar las pestañas
+        tabbedPane.addTab("Venta", null, panelVenta, null);
+        tabbedPane.addTab("Clientes", null, panelClientes, null);
+        tabbedPane.addTab("Productos", null, panelProductos, null);
+        tabbedPane.addTab("Proveedor", null, panelProveedor, null);
+        tabbedPane.addTab("Configuración", null, panelConfiguracion, null);
+    }
+
+    public static void main(String[] args) {
+        // Crear los paneles
+        JPanel panelVenta = new PanelVenta();
+        JPanel panelClientes = new PanelClientes();
+        JPanel panelProductos = new PanelProductos();
+        JPanel panelProveedor = new PanelProveedor();
+        JPanel panelConfiguracion = new PanelConfiguracion();
+
+        // Crear la ventana principal
+        prueba window = new prueba(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
+        window.frame.setVisible(true);
     }
 }
