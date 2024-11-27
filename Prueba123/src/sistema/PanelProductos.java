@@ -2,15 +2,10 @@ package sistema;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class PanelProductos extends JPanel {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private JTextField txtCodigoProducto, txtNombreProducto, txtCategoriaProducto, txtPrecioProducto, txtStockProducto;
+    private static final long serialVersionUID = 1L;
+    private JTextField txtCodigoProducto, txtNombreProducto, txtCategoriaProducto, txtPrecioProducto, txtStockProducto;
     private JTable tableProductos;
     private DefaultTableModel modeloTablaProductos;
 
@@ -62,8 +57,9 @@ public class PanelProductos extends JPanel {
         add(txtStockProducto);
 
         // Tabla
-        modeloTablaProductos = new DefaultTableModel(new String[]{"ID", "Código", "Nombre", "Categoría", "Precio", "Stock"}, 0);
+        modeloTablaProductos = new DefaultTableModel(new String[]{"Código", "Nombre", "Categoría", "Precio", "Stock"}, 0);
         tableProductos = new JTable(modeloTablaProductos);
+        tableProductos.getSelectionModel().addListSelectionListener(e -> llenarCamposDesdeTabla());
         JScrollPane scrollPaneProductos = new JScrollPane(tableProductos);
         scrollPaneProductos.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPaneProductos.setBounds(270, 60, 400, 270);
@@ -87,69 +83,88 @@ public class PanelProductos extends JPanel {
         add(btnNuevoProducto);
 
         // Acciones de los botones
-        btnGuardarProducto.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                guardarProducto();
-            }
-        });
-
-        btnActualizarProducto.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                actualizarProducto();
-            }
-        });
-
-        btnEliminarProducto.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                eliminarProducto();
-            }
-        });
-
-        btnNuevoProducto.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                limpiarCampos();
-            }
-        });
+        btnGuardarProducto.addActionListener(e -> guardarProducto());
+        btnActualizarProducto.addActionListener(e -> actualizarProducto());
+        btnEliminarProducto.addActionListener(e -> eliminarProducto());
+        btnNuevoProducto.addActionListener(e -> limpiarCampos());
     }
 
-    // Métodos para las acciones
     private void guardarProducto() {
-        // Guardar producto en la tabla
-        modeloTablaProductos.addRow(new Object[]{
-            modeloTablaProductos.getRowCount() + 1,
-            txtCodigoProducto.getText(),
-            txtNombreProducto.getText(),
-            txtCategoriaProducto.getText(),
-            txtPrecioProducto.getText(),
-            txtStockProducto.getText()
-        });
-        limpiarCampos();
-        System.out.println("Producto guardado.");
+        if (validarCampos()) {
+            modeloTablaProductos.addRow(new Object[]{
+                txtCodigoProducto.getText(),
+                txtNombreProducto.getText(),
+                txtCategoriaProducto.getText(),
+                Double.parseDouble(txtPrecioProducto.getText()),
+                Integer.parseInt(txtStockProducto.getText())
+            });
+            limpiarCampos();
+            System.out.println("Producto guardado.");
+        }
     }
 
     private void actualizarProducto() {
-        // Actualizar datos de un producto (implementación adicional requerida)
-        System.out.println("Actualizar Producto.");
+        int selectedRow = tableProductos.getSelectedRow();
+        if (selectedRow >= 0 && validarCampos()) {
+            modeloTablaProductos.setValueAt(txtCodigoProducto.getText(), selectedRow, 0);
+            modeloTablaProductos.setValueAt(txtNombreProducto.getText(), selectedRow, 1);
+            modeloTablaProductos.setValueAt(txtCategoriaProducto.getText(), selectedRow, 2);
+            modeloTablaProductos.setValueAt(Double.parseDouble(txtPrecioProducto.getText()), selectedRow, 3);
+            modeloTablaProductos.setValueAt(Integer.parseInt(txtStockProducto.getText()), selectedRow, 4);
+            limpiarCampos();
+            System.out.println("Producto actualizado.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para actualizar.");
+        }
     }
 
     private void eliminarProducto() {
-        // Eliminar el producto seleccionado
         int selectedRow = tableProductos.getSelectedRow();
         if (selectedRow >= 0) {
-            modeloTablaProductos.removeRow(selectedRow);
-            System.out.println("Producto eliminado.");
+            int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este producto?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                modeloTablaProductos.removeRow(selectedRow);
+                limpiarCampos();
+                System.out.println("Producto eliminado.");
+            }
         } else {
-            System.out.println("Seleccione un producto para eliminar.");
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar.");
         }
     }
 
     private void limpiarCampos() {
-        // Limpiar los campos de texto
         txtCodigoProducto.setText("");
         txtNombreProducto.setText("");
         txtCategoriaProducto.setText("");
         txtPrecioProducto.setText("");
         txtStockProducto.setText("");
-        System.out.println("Campos limpiados.");
+    }
+
+    private boolean validarCampos() {
+        if (txtCodigoProducto.getText().isEmpty() || txtNombreProducto.getText().isEmpty() ||
+            txtCategoriaProducto.getText().isEmpty() || txtPrecioProducto.getText().isEmpty() ||
+            txtStockProducto.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        try {
+            Double.parseDouble(txtPrecioProducto.getText());
+            Integer.parseInt(txtStockProducto.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Precio y Stock deben ser numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void llenarCamposDesdeTabla() {
+        int selectedRow = tableProductos.getSelectedRow();
+        if (selectedRow >= 0) {
+            txtCodigoProducto.setText(modeloTablaProductos.getValueAt(selectedRow, 0).toString());
+            txtNombreProducto.setText(modeloTablaProductos.getValueAt(selectedRow, 1).toString());
+            txtCategoriaProducto.setText(modeloTablaProductos.getValueAt(selectedRow, 2).toString());
+            txtPrecioProducto.setText(modeloTablaProductos.getValueAt(selectedRow, 3).toString());
+            txtStockProducto.setText(modeloTablaProductos.getValueAt(selectedRow, 4).toString());
+        }
     }
 }

@@ -1,26 +1,28 @@
 package Funcionalidad;
 
 public class Cliente {
-    private String cedulaRnc;
+    private int id;
     private String nombre;
-    private String telefono;
     private String direccion;
+    private String telefono;
+    private String email;
 
     // Constructor
-    public Cliente(String cedulaRnc, String nombre, String telefono, String direccion) {
-        this.cedulaRnc = cedulaRnc;
+    public Cliente(int id, String nombre, String direccion, String telefono, String email) {
+        this.id = id;
         this.nombre = nombre;
-        this.telefono = telefono;
         this.direccion = direccion;
+        this.telefono = telefono;
+        this.email = email;
     }
 
-    // Getters y setters
-    public String getCedulaRnc() {
-        return cedulaRnc;
+    // Getters y Setters
+    public int getId() {
+        return id;
     }
 
-    public void setCedulaRnc(String cedulaRnc) {
-        this.cedulaRnc = cedulaRnc;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -31,14 +33,6 @@ public class Cliente {
         this.nombre = nombre;
     }
 
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
     public String getDireccion() {
         return direccion;
     }
@@ -47,14 +41,19 @@ public class Cliente {
         this.direccion = direccion;
     }
 
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "cedulaRnc='" + cedulaRnc + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", telefono='" + telefono + '\'' +
-                ", direccion='" + direccion + '\'' +
-                '}';
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
-

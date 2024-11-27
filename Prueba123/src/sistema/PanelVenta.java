@@ -1,99 +1,183 @@
 package sistema;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import Funcionalidad.Producto; // Importar la clase Producto
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PanelVenta extends JPanel {
-
     private static final long serialVersionUID = 1L;
-    private JTextField textField_1;
-    private JTextField textField_2;
-    private JTextField textField_3;
-    private JTextField textField_4;
+    private JTextField textFieldCodigo, textFieldProducto, textFieldCantidad, textFieldPrecio, textFieldTotal, textFieldStock, textFieldCliente;
     private DefaultTableModel modeloTablaVenta;
+    private JTable tableVenta;
+    private List<Producto> listaProductos;
 
     public PanelVenta() {
         setLayout(null);
+        initializeComponents();
+        cargarProductos(); // Cargar datos de ejemplo
+    }
 
+    private void initializeComponents() {
         // Modelo de la tabla para Venta
         modeloTablaVenta = new DefaultTableModel(new String[]{"ID", "Producto", "Cantidad", "Precio", "Total"}, 0);
-        JTable table_Venta = new JTable(modeloTablaVenta);
-        JScrollPane scrollPaneVenta = new JScrollPane(table_Venta);
+        tableVenta = new JTable(modeloTablaVenta);
+        JScrollPane scrollPaneVenta = new JScrollPane(tableVenta);
         scrollPaneVenta.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPaneVenta.setBounds(257, 49, 394, 283);
+        scrollPaneVenta.setBounds(10, 85, 712, 260);
         add(scrollPaneVenta);
 
-        // Etiquetas para los campos de venta
+        // Etiquetas y campos de texto
+        JLabel lblCodigo = new JLabel("Código:");
+        lblCodigo.setBounds(30, 11, 80, 14);
+        add(lblCodigo);
+
         JLabel lblProducto = new JLabel("Producto:");
-        lblProducto.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblProducto.setBounds(42, 52, 67, 14);
+        lblProducto.setBounds(275, 11, 67, 14);
         add(lblProducto);
 
         JLabel lblCantidad = new JLabel("Cantidad:");
-        lblCantidad.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblCantidad.setBounds(42, 97, 67, 14);
+        lblCantidad.setBounds(415, 11, 67, 14);
         add(lblCantidad);
 
         JLabel lblPrecio = new JLabel("Precio:");
-        lblPrecio.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblPrecio.setBounds(42, 144, 46, 14);
+        lblPrecio.setBounds(530, 11, 67, 14);
         add(lblPrecio);
 
-        JLabel lblTotal = new JLabel("Total:");
-        lblTotal.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblTotal.setBounds(42, 193, 46, 14);
+        JLabel lblTotal = new JLabel("Total a pagar:");
+        lblTotal.setBounds(530, 389, 89, 14);
         add(lblTotal);
 
-        // Campos de texto para los datos de la venta
-        textField_1 = new JTextField();
-        textField_1.setBounds(117, 49, 120, 20);
-        add(textField_1);
-        textField_1.setColumns(10);
+        textFieldCodigo = new JTextField();
+        textFieldCodigo.setBounds(43, 37, 147, 20);
+        textFieldCodigo.addActionListener(e -> buscarProducto());
+        add(textFieldCodigo);
 
-        textField_2 = new JTextField();
-        textField_2.setBounds(117, 94, 120, 20);
-        add(textField_2);
-        textField_2.setColumns(10);
+        textFieldProducto = new JTextField();
+        textFieldProducto.setBounds(210, 37, 192, 20);
+        textFieldProducto.setEditable(false);
+        add(textFieldProducto);
 
-        textField_3 = new JTextField();
-        textField_3.setBounds(117, 141, 120, 20);
-        add(textField_3);
-        textField_3.setColumns(10);
+        textFieldCantidad = new JTextField();
+        textFieldCantidad.setBounds(415, 36, 67, 20);
+        textFieldCantidad.addActionListener(e -> calcularTotal()); // Vincular al evento del campo
+        add(textFieldCantidad);
 
-        textField_4 = new JTextField();
-        textField_4.setBounds(117, 190, 120, 20);
-        add(textField_4);
-        textField_4.setColumns(10);
+        textFieldPrecio = new JTextField();
+        textFieldPrecio.setBounds(504, 37, 86, 20);
+        textFieldPrecio.setEditable(false);
+        add(textFieldPrecio);
+
+        textFieldTotal = new JTextField();
+        textFieldTotal.setBounds(195, 387, 120, 20);
+        textFieldTotal.setEditable(false);
+        add(textFieldTotal);
 
         // Botón para agregar la venta
-        JButton btnAgregarVenta = new JButton("Agregar");
-        btnAgregarVenta.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        btnAgregarVenta.setBounds(137, 276, 89, 23);
+        JButton btnAgregarVenta = new JButton("Generar Venta");
+        btnAgregarVenta.setBounds(530, 356, 181, 23);
         btnAgregarVenta.addActionListener(e -> agregarVenta());
         add(btnAgregarVenta);
+
+        textFieldStock = new JTextField();
+        textFieldStock.setBounds(613, 37, 86, 20);
+        textFieldStock.setEditable(false);
+        add(textFieldStock);
+
+        textFieldCliente = new JTextField();
+        textFieldCliente.setBounds(195, 361, 120, 20);
+        add(textFieldCliente);
+
+        JLabel lblCliente = new JLabel("Cliente:");
+        lblCliente.setBounds(79, 361, 46, 14);
+        add(lblCliente);
+
+        JLabel lblNombreCliente = new JLabel("Nombre del cliente");
+        lblNombreCliente.setBounds(43, 389, 103, 14);
+        add(lblNombreCliente);
+
+        JLabel lblStock = new JLabel("Stock:");
+        lblStock.setBounds(629, 11, 46, 14);
+        add(lblStock);
     }
 
-    // Método para agregar la venta a la tabla
+    private void cargarProductos() {
+        listaProductos = new ArrayList<>();
+        // Agregar productos de ejemplo
+        listaProductos.add(new Producto(1, "Celular Samsung", 300.50, 10, "Samsung Inc.", "P001", "Electrónicos"));
+        listaProductos.add(new Producto(2, "Celular iPhone", 1200.00, 5, "Apple Inc.", "P002", "Electrónicos"));
+        listaProductos.add(new Producto(3, "Celular Xiaomi", 250.00, 20, "Xiaomi Corp.", "P003", "Electrónicos"));
+        listaProductos.add(new Producto(4, "Celular Motorola", 150.75, 15, "Motorola Inc.", "P004", "Electrónicos"));
+    }
+
+    private void buscarProducto() {
+        String codigo = textFieldCodigo.getText();
+        for (Producto producto : listaProductos) {
+            if (producto.getCodigo().equalsIgnoreCase(codigo)) {
+                textFieldProducto.setText(producto.getNombre());
+                textFieldPrecio.setText(String.valueOf(producto.getPrecio()));
+                textFieldStock.setText(String.valueOf(producto.getStock()));
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Producto no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+        limpiarCampos();
+    }
+
+    private void calcularTotal() {
+        try {
+            int cantidad = Integer.parseInt(textFieldCantidad.getText());
+            double precio = Double.parseDouble(textFieldPrecio.getText());
+            double total = cantidad * precio;
+            textFieldTotal.setText(String.format("%.2f", total)); // Mostrar con 2 decimales
+        } catch (NumberFormatException e) {
+            textFieldTotal.setText("");
+        }
+    }
+
     private void agregarVenta() {
-        String producto = textField_1.getText();
-        String cantidad = textField_2.getText();
-        String precio = textField_3.getText();
-        String total = textField_4.getText();
+        try {
+            if (textFieldProducto.getText().isEmpty() || textFieldCantidad.getText().isEmpty() ||
+                textFieldPrecio.getText().isEmpty() || textFieldStock.getText().isEmpty() ||
+                textFieldCliente.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Lógica para agregar una nueva fila en la tabla con los datos de la venta
-        modeloTablaVenta.addRow(new Object[]{modeloTablaVenta.getRowCount() + 1, producto, cantidad, precio, total});
+            int cantidad = Integer.parseInt(textFieldCantidad.getText());
+            int stock = Integer.parseInt(textFieldStock.getText());
 
-        // Limpiar los campos de texto después de agregar la venta
-        textField_1.setText("");
-        textField_2.setText("");
-        textField_3.setText("");
-        textField_4.setText("");
+            if (cantidad > stock) {
+                JOptionPane.showMessageDialog(this, "La cantidad supera el stock disponible.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String producto = textFieldProducto.getText();
+            double precio = Double.parseDouble(textFieldPrecio.getText());
+            double total = cantidad * precio;
+
+            modeloTablaVenta.addRow(new Object[]{
+                modeloTablaVenta.getRowCount() + 1,
+                producto,
+                cantidad,
+                precio,
+                total
+            });
+
+            JOptionPane.showMessageDialog(this, "Venta generada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            limpiarCampos();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese datos válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void limpiarCampos() {
+        textFieldCodigo.setText("");
+        textFieldProducto.setText("");
+        textFieldCantidad.setText("");
+        textFieldPrecio.setText("");
+        textFieldTotal.setText("");
+        textFieldStock.setText("");
     }
 }

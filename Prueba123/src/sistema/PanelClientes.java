@@ -87,4 +87,3 @@ public class PanelClientes extends JPanel {
         btnNuevo.addActionListener(e -> System.out.println("Nuevo Cliente."));
     }
 }
-

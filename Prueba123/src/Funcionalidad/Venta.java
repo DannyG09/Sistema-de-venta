@@ -3,28 +3,28 @@ package Funcionalidad;
 import java.util.Date;
 
 public class Venta {
-    private Cliente cliente;
+    private int id;
     private Producto producto;
     private int cantidad;
     private double total;
     private Date fecha;
 
     // Constructor
-    public Venta(Cliente cliente, Producto producto, int cantidad, Date fecha) {
-        this.cliente = cliente;
+    public Venta(int id, Producto producto, int cantidad, double total, Date fecha) {
+        this.id = id;
         this.producto = producto;
         this.cantidad = cantidad;
-        this.total = producto.getPrecio() * cantidad;
+        this.total = total;
         this.fecha = fecha;
     }
 
-    // Getters y setters
-    public Cliente getCliente() {
-        return cliente;
+    // Getters y Setters
+    public int getId() {
+        return id;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Producto getProducto() {
@@ -33,7 +33,6 @@ public class Venta {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
-        this.total = producto.getPrecio() * cantidad; // Recalcular el total
     }
 
     public int getCantidad() {
@@ -42,11 +41,14 @@ public class Venta {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
-        this.total = producto.getPrecio() * cantidad; // Recalcular el total
     }
 
     public double getTotal() {
         return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 
     public Date getFecha() {
@@ -55,16 +57,5 @@ public class Venta {
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
-    }
-
-    @Override
-    public String toString() {
-        return "Venta{" +
-                "cliente=" + cliente +
-                ", producto=" + producto +
-                ", cantidad=" + cantidad +
-                ", total=" + total +
-                ", fecha=" + fecha +
-                '}';
     }
 }

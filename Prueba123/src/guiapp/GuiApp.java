@@ -30,13 +30,13 @@ public class GuiApp {
         // Crear la ventana principal
         frame = new JFrame();
         frame.getContentPane().setBackground(new Color(0, 0, 0));
-        frame.setBounds(100, 100, 833, 495);
+        frame.setBounds(100, 100, 898, 551);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         // Panel lateral
         panelLateral = new JPanel();
-        panelLateral.setBounds(0, 0, 126, 456);
+        panelLateral.setBounds(0, 0, 126, 489);
         panelLateral.setBackground(new Color(0, 0, 0));
         panelLateral.setLayout(null);
         frame.getContentPane().add(panelLateral);
@@ -102,7 +102,7 @@ public class GuiApp {
 
         // Configuración del JTabbedPane
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setBounds(124, 49, 683, 396);
+        tabbedPane.setBounds(124, 49, 734, 440);
         frame.getContentPane().add(tabbedPane);
 
         // Agregar las pestañas
