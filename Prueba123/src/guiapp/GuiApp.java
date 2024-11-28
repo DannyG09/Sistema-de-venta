@@ -1,4 +1,4 @@
- package guiapp;
+package guiapp;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-
+import javax.swing.UIManager;
 import sistema.PanelClientes;
 import sistema.PanelConfiguracion;
 import sistema.PanelProductos;
@@ -21,8 +21,6 @@ public class GuiApp {
     private JTabbedPane tabbedPane;
     private JPanel panelLateral;
     
-    
-
     // Constructor con parámetros para recibir los paneles
     public GuiApp(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
         initialize(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
@@ -116,6 +114,24 @@ public class GuiApp {
     }
 
     public static void main(String[] args) {
+        // Establecer el Look and Feel Nimbus
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // Si Nimbus no está disponible, usar Look and Feel Cross-Platform
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (Exception ex) {
+                // Manejo de excepción si no se puede establecer un Look and Feel
+                ex.printStackTrace();
+            }
+        }
+
         // Crear los paneles
         JPanel panelVenta = new PanelVenta();
         JPanel panelClientes = new PanelClientes();
