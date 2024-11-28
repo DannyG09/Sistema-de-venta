@@ -1,19 +1,23 @@
 package guiapp;
 
 import java.awt.EventQueue;
+import java.util.logging.Logger;
+
 import sistema.PanelClientes;
 import sistema.PanelConfiguracion;
 import sistema.PanelProductos;
 import sistema.PanelProveedor;
 import sistema.PanelVenta;
 
-public class Main {    
+public class Main {
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    // Inicializar la base de datos
-                    Conexion_bdd.iniciarBaseDeDatos(); // Llama al método estático para inicializar la base de datos
+                    // Inicializar la conexión a la base de datos
+                    Conexion_bdd.getConnection(); // Establece la conexión a la base de datos
 
                     // Crear las instancias de los paneles
                     PanelVenta panelVenta = new PanelVenta();             // Panel de Venta
@@ -26,6 +30,7 @@ public class Main {
                     GuiApp window = new GuiApp(panelVenta, panelCliente, panelProducto, panelProveedor, panelConfiguracion);
                     window.frame.setVisible(true); // Mostrar la ventana
                 } catch (Exception e) {
+                    logger.severe("Error al iniciar la aplicación: " + e.getMessage());
                     e.printStackTrace(); // Imprimir la traza de la excepción
                 }
             }

@@ -86,4 +86,4 @@ public class PanelClientes extends JPanel {
         btnEliminar.addActionListener(e -> System.out.println("Eliminar Cliente."));
         btnNuevo.addActionListener(e -> System.out.println("Nuevo Cliente."));
     }
-}
+} 

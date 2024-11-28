@@ -105,16 +105,12 @@ public class PanelVenta extends JPanel {
     private void cargarProductos() {
         listaProductos = new ArrayList<>();
         // Agregar productos de ejemplo
-        listaProductos.add(new Producto(1, "Celular Samsung", 300.50, 10, "Samsung Inc.", "P001", "Electrónicos"));
-        listaProductos.add(new Producto(2, "Celular iPhone", 1200.00, 5, "Apple Inc.", "P002", "Electrónicos"));
-        listaProductos.add(new Producto(3, "Celular Xiaomi", 250.00, 20, "Xiaomi Corp.", "P003", "Electrónicos"));
-        listaProductos.add(new Producto(4, "Celular Motorola", 150.75, 15, "Motorola Inc.", "P004", "Electrónicos"));
     }
 
     private void buscarProducto() {
         String codigo = textFieldCodigo.getText();
         for (Producto producto : listaProductos) {
-            if (producto.getCodigo().equalsIgnoreCase(codigo)) {
+            if (producto.getId().equalsIgnoreCase(codigo)) {
                 textFieldProducto.setText(producto.getNombre());
                 textFieldPrecio.setText(String.valueOf(producto.getPrecio()));
                 textFieldStock.setText(String.valueOf(producto.getStock()));

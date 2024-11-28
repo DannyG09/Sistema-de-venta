@@ -1,4 +1,4 @@
-package guiapp;
+ package guiapp;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,6 +20,8 @@ public class GuiApp {
     JFrame frame;
     private JTabbedPane tabbedPane;
     private JPanel panelLateral;
+    
+    
 
     // Constructor con parámetros para recibir los paneles
     public GuiApp(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
