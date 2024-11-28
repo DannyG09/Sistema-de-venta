@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,13 +16,14 @@ public class PanelProductos extends JPanel {
     private JTextField txtCodigoProducto, txtNombreProducto, txtCategoriaProducto, txtPrecioProducto, txtStockProducto;
     private JTable tableProductos;
     private DefaultTableModel modeloTablaProductos;
-    private JButton btnGuardarProducto;
+    private JButton btnGuardarProducto, btnEliminarProducto;
     private Connection conn;
 
     public PanelProductos() {
         conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
         setLayout(null);
         initializeComponents();
+        cargarProductos(); // Cargar datos iniciales en la tabla
     }
 
     private void initializeComponents() {
@@ -48,6 +50,7 @@ public class PanelProductos extends JPanel {
 
         txtCodigoProducto = new JTextField();
         txtCodigoProducto.setBounds(120, 57, 120, 20);
+        txtCodigoProducto.setEditable(false); // Código generado automáticamente
         add(txtCodigoProducto);
 
         txtNombreProducto = new JTextField();
@@ -78,11 +81,24 @@ public class PanelProductos extends JPanel {
         btnGuardarProducto.setBounds(30, 270, 90, 23);
         add(btnGuardarProducto);
 
+        // Botón de eliminar
+        btnEliminarProducto = new JButton("Eliminar");
+        btnEliminarProducto.setBounds(130, 270, 90, 23);
+        add(btnEliminarProducto);
+
         // Acción del botón de guardar
         btnGuardarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 guardarProducto();
+            }
+        });
+
+        // Acción del botón de eliminar
+        btnEliminarProducto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eliminarProducto();
             }
         });
     }
@@ -94,21 +110,20 @@ public class PanelProductos extends JPanel {
             double precio = Double.parseDouble(txtPrecioProducto.getText());
             int stock = Integer.parseInt(txtStockProducto.getText());
 
-            // Query de inserción sin el campo "codigo" (id será AUTO_INCREMENT)
-            String query = "INSERT INTO productos (nombre, categoria, precio, stock) VALUES ('" +
-                    nombre + "', '" + categoria + "', " + precio + ", " + stock + ")";
-            
-            try (Statement stmt = conn.createStatement()) {
-                // Ejecutar la consulta de inserción
-                int rowsAffected = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+            String query = "INSERT INTO productos (nombre, categoria, precio, stock) VALUES (?, ?, ?, ?)";
 
-                // Obtener el código generado automáticamente
+            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, nombre);
+                stmt.setString(2, categoria);
+                stmt.setDouble(3, precio);
+                stmt.setInt(4, stock);
+
+                int rowsAffected = stmt.executeUpdate();
+
                 if (rowsAffected > 0) {
                     ResultSet rs = stmt.getGeneratedKeys();
                     if (rs.next()) {
-                        int codigo = rs.getInt(1);  // El primer campo es el código generado (id)
-                        
-                        // Mostrar el código generado junto con los demás datos en la tabla
+                        int codigo = rs.getInt(1);
                         modeloTablaProductos.addRow(new Object[]{codigo, nombre, categoria, precio, stock});
                         JOptionPane.showMessageDialog(this, "Producto guardado correctamente con código: " + codigo);
                         limpiarCampos();
@@ -120,13 +135,9 @@ public class PanelProductos extends JPanel {
         }
     }
 
-
-
-
     private boolean validarCampos() {
-        if (txtCodigoProducto.getText().isEmpty() || txtNombreProducto.getText().isEmpty() ||
-            txtCategoriaProducto.getText().isEmpty() || txtPrecioProducto.getText().isEmpty() ||
-            txtStockProducto.getText().isEmpty()) {
+        if (txtNombreProducto.getText().isEmpty() || txtCategoriaProducto.getText().isEmpty() ||
+            txtPrecioProducto.getText().isEmpty() || txtStockProducto.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -146,5 +157,54 @@ public class PanelProductos extends JPanel {
         txtCategoriaProducto.setText("");
         txtPrecioProducto.setText("");
         txtStockProducto.setText("");
+    }
+
+    private void cargarProductos() {
+        String query = "SELECT * FROM productos";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                modeloTablaProductos.addRow(new Object[]{
+                        rs.getInt("codigo"),
+                        rs.getString("nombre"),
+                        rs.getString("categoria"),
+                        rs.getDouble("precio"),
+                        rs.getInt("stock")
+                });
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los productos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void eliminarProducto() {
+        int selectedRow = tableProductos.getSelectedRow();
+        if (selectedRow != -1) {
+            // Obtener el código del producto seleccionado
+            int codigoProducto = (int) modeloTablaProductos.getValueAt(selectedRow, 0);
+
+            // Confirmación antes de eliminar
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de eliminar este producto?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                // Eliminar producto de la base de datos
+                String query = "DELETE FROM productos WHERE codigo = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setInt(1, codigoProducto);
+                    int rowsAffected = stmt.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        // Eliminar fila de la tabla
+                        modeloTablaProductos.removeRow(selectedRow);
+                        JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al eliminar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar el producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un producto para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
