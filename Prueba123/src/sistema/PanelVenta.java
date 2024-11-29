@@ -29,7 +29,7 @@ public class PanelVenta extends JPanel {
 
     private void initializeComponents() {
         // Modelo de la tabla para Venta
-        modeloTablaVenta = new DefaultTableModel(new String[]{"Código Producto", "Cliente", "Cantidad", "Precio", "Total"}, 0);
+    	modeloTablaVenta = new DefaultTableModel(new String[]{"Código Producto", "Producto", "Categoría", "Cliente", "Cantidad", "Precio", "Total"}, 0);
         tableVenta = new JTable(modeloTablaVenta);
         JScrollPane scrollPaneVenta = new JScrollPane(tableVenta);
         scrollPaneVenta.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -190,6 +190,8 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al cargar los datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    
 
     private void registrarVenta() {
         try {
@@ -214,14 +216,44 @@ public class PanelVenta extends JPanel {
             double precio = Double.parseDouble(textFieldPrecio.getText());
             double total = Double.parseDouble(textFieldTotal.getText());
 
-            // Insertar la venta principal con todos los valores
+            // Consultar el nombre del cliente para agregarlo en la venta
+            String queryCliente = "SELECT nombre FROM Clientes WHERE id = ?";
+            String nombreCliente = "";
+            try (PreparedStatement stmtCliente = conn.prepareStatement(queryCliente)) {
+                stmtCliente.setInt(1, idCliente);
+                ResultSet rsCliente = stmtCliente.executeQuery();
+                if (rsCliente.next()) {
+                    nombreCliente = rsCliente.getString("nombre");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cliente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Consultar el nombre del producto y la categoría
+            String queryProducto = "SELECT nombre, categoria FROM Productos WHERE id = ?";
+            String nombreProducto = "";
+            String categoriaProducto = "";
+            try (PreparedStatement stmtProducto = conn.prepareStatement(queryProducto)) {
+                stmtProducto.setString(1, textFielNombredeprocto.getText());
+                ResultSet rsProducto = stmtProducto.executeQuery();
+                if (rsProducto.next()) {
+                    nombreProducto = rsProducto.getString("nombre");
+                    categoriaProducto = rsProducto.getString("categoria");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Producto no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Insertar la venta
             String queryVenta = "INSERT INTO Ventas (producto, cantidad, precio, total, cliente_id) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement stmtVenta = conn.prepareStatement(queryVenta, Statement.RETURN_GENERATED_KEYS)) {
-                stmtVenta.setString(1, textFielNombredeprocto.getText()); // Código del Producto
-                stmtVenta.setInt(2, cantidad); // Cantidad
-                stmtVenta.setDouble(3, precio); // Precio
-                stmtVenta.setDouble(4, total); // Total
-                stmtVenta.setInt(5, idCliente); // ID Cliente
+                stmtVenta.setString(1, textFielNombredeprocto.getText());  // Código del Producto
+                stmtVenta.setInt(2, cantidad);                             // Cantidad
+                stmtVenta.setDouble(3, precio);                            // Precio
+                stmtVenta.setDouble(4, total);                             // Total
+                stmtVenta.setInt(5, idCliente);                            // ID Cliente
 
                 int filasAfectadas = stmtVenta.executeUpdate();
                 if (filasAfectadas == 0) {
@@ -229,9 +261,15 @@ public class PanelVenta extends JPanel {
                     return;
                 }
 
-                // Agregar venta al modelo de la tabla
+                // Agregar la venta al modelo de la tabla
                 modeloTablaVenta.addRow(new Object[] {
-                		textFielNombredeprocto.getText(), textFieldProducto.getText(), cantidad, precio, total
+                    textFielNombredeprocto.getText(),   // Código del Producto
+                    nombreProducto,                     // Nombre del Producto
+                    categoriaProducto,                  // Categoría del Producto
+                    nombreCliente,                      // Nombre del Cliente
+                    cantidad,                           // Cantidad
+                    precio,                             // Precio
+                    total                               // Total
                 });
 
                 // Limpiar campos
@@ -241,6 +279,9 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
+    
     
     private void generarPDFVenta() {
         // Ruta del archivo PDF
@@ -328,19 +369,29 @@ public class PanelVenta extends JPanel {
     }
 
     private void cargarVentas() {
-        String query = "SELECT v.producto, v.cantidad, v.precio, v.total, c.nombre FROM Ventas v JOIN Clientes c ON v.cliente_id = c.id";
+        String query = "SELECT v.producto AS producto_id, p.nombre AS producto_nombre, p.categoria, v.cantidad, v.precio, v.total, c.nombre AS cliente_nombre " +
+                       "FROM Ventas v " +
+                       "JOIN Clientes c ON v.cliente_id = c.id " +  // Obtener el cliente
+                       "JOIN Productos p ON v.producto = p.id";    // Obtener el nombre del producto
+
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                modeloTablaVenta.addRow(new Object[]{
-                    rs.getString("producto"),
-                    rs.getString("nombre"),
-                    rs.getInt("cantidad"),
-                    rs.getDouble("precio"),
-                    rs.getDouble("total")
+                modeloTablaVenta.addRow(new Object[] {
+                    rs.getString("producto_id"),        // Código del producto
+                    rs.getString("producto_nombre"),    // Nombre del producto
+                    rs.getString("categoria"),          // Categoría del producto
+                    rs.getString("cliente_nombre"),     // Nombre del cliente
+                    rs.getInt("cantidad"),              // Cantidad
+                    rs.getDouble("precio"),             // Precio
+                    rs.getDouble("total")               // Total
                 });
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar las ventas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
+    
 }
+
