@@ -421,4 +421,3 @@ public class PanelVenta extends JPanel {
 
     
 }
-
