@@ -19,12 +19,14 @@ public class PanelVenta extends JPanel {
 
         if (conn == null) {
             JOptionPane.showMessageDialog(this, "Error al conectar con la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            cargarVentas(); // Cargar las ventas al iniciar el panel
         }
     }
 
     private void initializeComponents() {
         // Modelo de la tabla para Venta
-        modeloTablaVenta = new DefaultTableModel(new String[]{"ID Producto", "Producto", "Cantidad", "Precio", "Total"}, 0);
+        modeloTablaVenta = new DefaultTableModel(new String[]{"ID Producto", "Cliente", "Cantidad", "Precio", "Total"}, 0);
         tableVenta = new JTable(modeloTablaVenta);
         JScrollPane scrollPaneVenta = new JScrollPane(tableVenta);
         scrollPaneVenta.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -49,7 +51,7 @@ public class PanelVenta extends JPanel {
         add(lblPrecio);
 
         JLabel lblTotal = new JLabel("Total a pagar:");
-        lblTotal.setBounds(530, 389, 89, 14);
+        lblTotal.setBounds(453, 389, 89, 14);
         add(lblTotal);
 
         JLabel lblClienteId = new JLabel("ID Cliente:");
@@ -57,37 +59,37 @@ public class PanelVenta extends JPanel {
         add(lblClienteId);
 
         textFieldIdProducto = new JTextField();
-        textFieldIdProducto.setBounds(43, 37, 147, 20);
+        textFieldIdProducto.setBounds(43, 37, 147, 30);
         textFieldIdProducto.addActionListener(e -> buscarProducto());
         add(textFieldIdProducto);
 
         textFieldProducto = new JTextField();
-        textFieldProducto.setBounds(210, 37, 192, 20);
+        textFieldProducto.setBounds(210, 37, 192, 30);
         textFieldProducto.setEditable(false);
         add(textFieldProducto);
 
         textFieldCantidad = new JTextField();
-        textFieldCantidad.setBounds(415, 36, 67, 20);
+        textFieldCantidad.setBounds(415, 36, 67, 30);
         textFieldCantidad.addActionListener(e -> calcularTotal());
         add(textFieldCantidad);
 
         textFieldPrecio = new JTextField();
-        textFieldPrecio.setBounds(504, 37, 86, 20);
+        textFieldPrecio.setBounds(504, 37, 86, 30);
         textFieldPrecio.setEditable(false);
         add(textFieldPrecio);
 
         textFieldTotal = new JTextField();
-        textFieldTotal.setBounds(195, 387, 120, 20);
+        textFieldTotal.setBounds(530, 386, 181, 30);
         textFieldTotal.setEditable(false);
         add(textFieldTotal);
 
         textFieldClienteId = new JTextField();
-        textFieldClienteId.setBounds(195, 361, 120, 20);
+        textFieldClienteId.setBounds(195, 361, 120, 30);
         textFieldClienteId.addActionListener(e -> cargarDatosCliente()); // Llamar al método cuando se ingrese un ID de cliente
         add(textFieldClienteId);
 
         textFieldStock = new JTextField();
-        textFieldStock.setBounds(613, 37, 86, 20);
+        textFieldStock.setBounds(613, 37, 86, 30);
         textFieldStock.setEditable(false);
         add(textFieldStock);
 
@@ -205,24 +207,18 @@ public class PanelVenta extends JPanel {
                 }
                 // Agregar venta al modelo de la tabla
                 modeloTablaVenta.addRow(new Object[]{
-                    textFieldIdProducto.getText(),
-                    textFieldProducto.getText(),
-                    cantidad,
-                    textFieldPrecio.getText(),
-                    textFieldTotal.getText()
+                    textFieldIdProducto.getText(), textFieldProducto.getText(), cantidad, precio, total
                 });
 
-                // Mostrar mensaje de éxito
                 JOptionPane.showMessageDialog(this, "Venta registrada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Limpiar los campos después de registrar la venta
-                limpiarCampos();
             }
+
+            // Limpiar campos después de la venta
+            limpiarCampos();
+            cargarVentas(); // Recargar ventas en la tabla
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos válidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -232,7 +228,34 @@ public class PanelVenta extends JPanel {
         textFieldCantidad.setText("");
         textFieldPrecio.setText("");
         textFieldTotal.setText("");
-        textFieldClienteId.setText("");
         textFieldStock.setText("");
+        textFieldClienteId.setText("");
     }
+
+    private void cargarVentas() {
+        String query = "SELECT v.id, v.cliente_id, v.fecha, v.total, c.nombre FROM Ventas v " +
+                       "JOIN Clientes c ON v.cliente_id = c.id";
+        try (PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            // Limpiar la tabla antes de agregar los nuevos registros
+            modeloTablaVenta.setRowCount(0);
+
+            // Recorrer los resultados y agregar las filas a la tabla
+            while (rs.next()) {
+                int idVenta = rs.getInt("id");
+                int clienteId = rs.getInt("cliente_id");
+                Date fecha = rs.getDate("fecha");
+                double total = rs.getDouble("total");
+                String nombreCliente = rs.getString("nombre");
+
+                // Agregar los datos a la tabla
+                modeloTablaVenta.addRow(new Object[]{idVenta, nombreCliente, clienteId, fecha, total});
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las ventas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }

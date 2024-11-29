@@ -68,35 +68,35 @@ public class GuiApp {
         // Botón para "Venta"
         JButton btnVenta = new JButton("Venta");
         btnVenta.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnVenta.setBounds(10, 120, 95, 23);
+        btnVenta.setBounds(12, 149, 95, 23);
         btnVenta.addActionListener(e -> tabbedPane.setSelectedIndex(0)); // Selecciona la pestaña de "Venta"
         panelLateral.add(btnVenta);
 
         // Botón para "Clientes"
         JButton btnClientes = new JButton("Clientes");
         btnClientes.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnClientes.setBounds(10, 160, 95, 23);
+        btnClientes.setBounds(12, 189, 95, 23);
         btnClientes.addActionListener(e -> tabbedPane.setSelectedIndex(1)); // Selecciona la pestaña de "Clientes"
         panelLateral.add(btnClientes);
 
         // Botón para "Productos"
         JButton btnProductos = new JButton("Productos");
         btnProductos.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnProductos.setBounds(10, 200, 95, 23);
+        btnProductos.setBounds(12, 229, 95, 23);
         btnProductos.addActionListener(e -> tabbedPane.setSelectedIndex(2)); // Selecciona la pestaña de "Productos"
         panelLateral.add(btnProductos);
 
         // Botón para "Proveedor"
         JButton btnProveedor = new JButton("Proveedor");
         btnProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnProveedor.setBounds(10, 240, 95, 23);
+        btnProveedor.setBounds(12, 269, 95, 23);
         btnProveedor.addActionListener(e -> tabbedPane.setSelectedIndex(3)); // Selecciona la pestaña de "Proveedor"
         panelLateral.add(btnProveedor);
 
         // Botón para "Configuración"
         JButton btnConfiguracion = new JButton("Configuración");
         btnConfiguracion.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnConfiguracion.setBounds(10, 280, 95, 23);
+        btnConfiguracion.setBounds(12, 309, 95, 23);
         btnConfiguracion.addActionListener(e -> tabbedPane.setSelectedIndex(4)); // Selecciona la pestaña de "Configuración"
         panelLateral.add(btnConfiguracion);
 
