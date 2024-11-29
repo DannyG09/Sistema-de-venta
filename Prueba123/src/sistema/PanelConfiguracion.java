@@ -1,20 +1,24 @@
-
 package sistema;
 
+import guiapp.Conexion_bdd;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PanelConfiguracion extends JPanel {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private JTextField txtRnc, txtNombreEmpresa, txtTelefono, txtDireccion;
+    private static final long serialVersionUID = 1L;
+    private JTextField txtRnc, txtNombreEmpresa, txtTelefono, txtDireccion;
+    private Connection conn;
 
     public PanelConfiguracion() {
+        conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
         setLayout(null);
         initializeComponents();
+        cargarDatosConfiguracion(); // Cargar los datos al iniciar
     }
 
     private void initializeComponents() {
@@ -67,7 +71,7 @@ public class PanelConfiguracion extends JPanel {
             }
         });
 
-        // Acción para cancelar (limpiar los campos)
+        // Acción para cancelar (sin limpiar los campos)
         btnCancelarConfiguracion.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cancelarConfiguracion();
@@ -77,25 +81,63 @@ public class PanelConfiguracion extends JPanel {
 
     // Método para guardar la configuración
     private void guardarConfiguracion() {
-        String rnc = txtRnc.getText();
-        String nombreEmpresa = txtNombreEmpresa.getText();
-        String telefono = txtTelefono.getText();
-        String direccion = txtDireccion.getText();
+        if (validarCampos()) {
+            String rnc = txtRnc.getText();
+            String nombreEmpresa = txtNombreEmpresa.getText();
+            String telefono = txtTelefono.getText();
+            String direccion = txtDireccion.getText();
 
-        // Aquí podrías guardar la configuración en una base de datos o archivo
-        System.out.println("Configuración Guardada:");
-        System.out.println("RNC: " + rnc);
-        System.out.println("Nombre Empresa: " + nombreEmpresa);
-        System.out.println("Teléfono: " + telefono);
-        System.out.println("Dirección: " + direccion);
+            String query = "INSERT INTO Configuracion (rnc, nombre_empresa, telefono, direccion) VALUES (?, ?, ?, ?)";
+
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, rnc);
+                stmt.setString(2, nombreEmpresa);
+                stmt.setString(3, telefono);
+                stmt.setString(4, direccion);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this, "Configuración guardada correctamente.");
+                    System.out.println("Configuración Guardada:");
+                    System.out.println("RNC: " + rnc);
+                    System.out.println("Nombre Empresa: " + nombreEmpresa);
+                    System.out.println("Teléfono: " + telefono);
+                    System.out.println("Dirección: " + direccion);
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar la configuración: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
-    // Método para cancelar la configuración y limpiar los campos
+    // Método para validar los campos
+    private boolean validarCampos() {
+        if (txtRnc.getText().isEmpty() || txtNombreEmpresa.getText().isEmpty() ||
+            txtTelefono.getText().isEmpty() || txtDireccion.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    // Método para cargar los datos de la configuración desde la base de datos
+    private void cargarDatosConfiguracion() {
+        String query = "SELECT rnc, nombre_empresa, telefono, direccion FROM Configuracion LIMIT 2";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                txtRnc.setText(rs.getString("rnc"));
+                txtNombreEmpresa.setText(rs.getString("nombre_empresa"));
+                txtTelefono.setText(rs.getString("telefono"));
+                txtDireccion.setText(rs.getString("direccion"));
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar la configuración: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método para cancelar la configuración (sin limpiar los campos)
     private void cancelarConfiguracion() {
-        txtRnc.setText("");
-        txtNombreEmpresa.setText("");
-        txtTelefono.setText("");
-        txtDireccion.setText("");
         System.out.println("Configuración cancelada.");
     }
 }
