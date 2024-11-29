@@ -3,6 +3,9 @@ package sistema;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import java.awt.Color;
+import java.awt.Font;
+
 public class PanelProveedor extends JPanel {
     private static final long serialVersionUID = 1L;
     private JTextField txtNombreProveedor, txtTelefonoProveedor, txtEmailProveedor;
@@ -17,27 +20,30 @@ public class PanelProveedor extends JPanel {
     private void initializeComponents() {
         // Etiquetas y campos de texto
         JLabel lblNombreProveedor = new JLabel("Nombre:");
-        lblNombreProveedor.setBounds(30, 60, 80, 14);
+        lblNombreProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblNombreProveedor.setBounds(30, 122, 80, 14);
         add(lblNombreProveedor);
 
         JLabel lblTelefonoProveedor = new JLabel("Teléfono:");
-        lblTelefonoProveedor.setBounds(30, 100, 80, 14);
+        lblTelefonoProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblTelefonoProveedor.setBounds(30, 162, 80, 14);
         add(lblTelefonoProveedor);
 
         JLabel lblEmailProveedor = new JLabel("Email:");
-        lblEmailProveedor.setBounds(30, 140, 80, 14);
+        lblEmailProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblEmailProveedor.setBounds(30, 202, 80, 14);
         add(lblEmailProveedor);
 
         txtNombreProveedor = new JTextField();
-        txtNombreProveedor.setBounds(120, 57, 120, 30);
+        txtNombreProveedor.setBounds(120, 119, 120, 30);
         add(txtNombreProveedor);
 
         txtTelefonoProveedor = new JTextField();
-        txtTelefonoProveedor.setBounds(120, 97, 120, 30);
+        txtTelefonoProveedor.setBounds(120, 159, 120, 30);
         add(txtTelefonoProveedor);
 
         txtEmailProveedor = new JTextField();
-        txtEmailProveedor.setBounds(120, 137, 120, 30);
+        txtEmailProveedor.setBounds(120, 199, 120, 30);
         add(txtEmailProveedor);
 
         // Tabla
@@ -45,25 +51,39 @@ public class PanelProveedor extends JPanel {
         tableProveedores = new JTable(modeloTablaProveedores);
         JScrollPane scrollPaneProveedores = new JScrollPane(tableProveedores);
         scrollPaneProveedores.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPaneProveedores.setBounds(270, 60, 400, 270);
+        scrollPaneProveedores.setBounds(270, 99, 495, 270);
         add(scrollPaneProveedores);
 
-        // Botones de acción
+     // Botones de acción
         JButton btnGuardarProveedor = new JButton("Guardar");
         btnGuardarProveedor.setBounds(30, 270, 90, 23);
+        btnGuardarProveedor.setBackground(new Color(34, 139, 34)); // Fondo verde
+        btnGuardarProveedor.setForeground(Color.WHITE); // Texto blanco
         add(btnGuardarProveedor);
 
         JButton btnActualizarProveedor = new JButton("Actualizar");
         btnActualizarProveedor.setBounds(130, 270, 100, 23);
+        btnActualizarProveedor.setBackground(new Color(30, 144, 255)); // Fondo azul
+        btnActualizarProveedor.setForeground(Color.WHITE); // Texto blanco
         add(btnActualizarProveedor);
 
         JButton btnEliminarProveedor = new JButton("Eliminar");
         btnEliminarProveedor.setBounds(30, 310, 90, 23);
+        btnEliminarProveedor.setBackground(new Color(255, 99, 71)); // Fondo rojo
+        btnEliminarProveedor.setForeground(Color.WHITE); // Texto blanco
         add(btnEliminarProveedor);
 
         JButton btnNuevoProveedor = new JButton("Nuevo");
         btnNuevoProveedor.setBounds(130, 310, 100, 23);
+        btnNuevoProveedor.setBackground(new Color(255, 165, 0)); // Fondo naranja
+        btnNuevoProveedor.setForeground(Color.WHITE); // Texto blanco
         add(btnNuevoProveedor);
+
+        
+        JLabel lblNewLabel = new JLabel("Agregar Nuevos Proveedores");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        lblNewLabel.setBounds(229, 36, 366, 30);
+        add(lblNewLabel);
 
         // Acciones de los botones
         btnGuardarProveedor.addActionListener(e -> guardarProveedor());

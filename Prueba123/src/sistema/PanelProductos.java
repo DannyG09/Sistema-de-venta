@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.awt.Color;
 import java.awt.Font;
 
 public class PanelProductos extends JPanel {
@@ -71,28 +72,28 @@ public class PanelProductos extends JPanel {
         modeloTablaProductos = new DefaultTableModel(new String[]{"Código", "Nombre", "Categoría", "Precio", "Stock"}, 0);
         tableProductos = new JTable(modeloTablaProductos);
         JScrollPane scrollPaneProductos = new JScrollPane(tableProductos);
-        scrollPaneProductos.setBounds(280, 83, 400, 270);
+        scrollPaneProductos.setBounds(280, 83, 464, 270);
         add(scrollPaneProductos);
 
-        // Botón de guardar
+     // Botón de guardar
         btnGuardarProducto = new JButton("Guardar");
         btnGuardarProducto.setBounds(38, 293, 90, 23);
+        btnGuardarProducto.setBackground(new Color(34, 139, 34)); // Fondo verde
+        btnGuardarProducto.setForeground(Color.WHITE); // Texto blanco
         add(btnGuardarProducto);
 
         // Botón de eliminar
         btnEliminarProducto = new JButton("Eliminar");
         btnEliminarProducto.setBounds(138, 293, 90, 23);
+        btnEliminarProducto.setBackground(new Color(255, 99, 71)); // Fondo rojo
+        btnEliminarProducto.setForeground(Color.WHITE); // Texto blanco
         add(btnEliminarProducto);
+
         
         JLabel lblNewLabel = new JLabel("Agregar Nuevos Productos");
-        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 17));
-        lblNewLabel.setBounds(40, 78, 230, 23);
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        lblNewLabel.setBounds(233, 33, 269, 23);
         add(lblNewLabel);
-        
-        JLabel lblNewLabel_1 = new JLabel("D'Guerrero Technology");
-        lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
-        lblNewLabel_1.setBounds(245, 26, 335, 23);
-        add(lblNewLabel_1);
 
         // Acción del botón de guardar
         btnGuardarProducto.addActionListener(new ActionListener() {

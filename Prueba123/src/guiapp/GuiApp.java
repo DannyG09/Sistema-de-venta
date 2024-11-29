@@ -31,7 +31,7 @@ public class GuiApp {
         frame = new JFrame();
         frame.setBackground(new Color(192, 192, 192));
         frame.getContentPane().setBackground(new Color(0, 0, 0));
-        frame.setBounds(100, 100, 898, 583);
+        frame.setBounds(100, 100, 941, 583);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -105,7 +105,7 @@ public class GuiApp {
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setForeground(new Color(255, 255, 255));
         tabbedPane.setBackground(new Color(255, 255, 255));
-        tabbedPane.setBounds(124, 49, 734, 464);
+        tabbedPane.setBounds(124, 49, 789, 464);
         frame.getContentPane().add(tabbedPane);
 
         // Agregar las pestañas

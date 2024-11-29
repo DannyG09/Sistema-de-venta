@@ -7,10 +7,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.sql.*;
+import java.awt.Font;
 
 public class PanelVenta extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JTextField textFielNombredeprocto, textFieldProducto, textFieldCantidad, textFieldPrecio, textFieldTotal, textFieldStock, textFieldClienteId;
+    private JTextField textFielNombredeprocto, textFieldProducto, textFieldCantidad, textFieldPrecio, textFieldTotal, textFieldStock,textFieldCategoria, textFieldClienteId;
     private DefaultTableModel modeloTablaVenta;
     private JTable tableVenta;
     private Connection conn;
@@ -33,51 +34,63 @@ public class PanelVenta extends JPanel {
         tableVenta = new JTable(modeloTablaVenta);
         JScrollPane scrollPaneVenta = new JScrollPane(tableVenta);
         scrollPaneVenta.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPaneVenta.setBounds(10, 85, 712, 260);
+        scrollPaneVenta.setBounds(10, 85, 763, 260);
         add(scrollPaneVenta);
 
         // Etiquetas y campos de texto
         JLabel lblCodigoProducto = new JLabel("Código Producto:");
-        lblCodigoProducto.setBounds(30, 11, 120, 14);
+        lblCodigoProducto.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblCodigoProducto.setBounds(26, 15, 147, 14);
         add(lblCodigoProducto);
 
         JLabel lblProducto = new JLabel("Producto:");
-        lblProducto.setBounds(275, 11, 67, 14);
+        lblProducto.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblProducto.setBounds(210, 15, 67, 14);
         add(lblProducto);
 
         JLabel lblCantidad = new JLabel("Cantidad:");
-        lblCantidad.setBounds(415, 11, 67, 14);
+        lblCantidad.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblCantidad.setBounds(449, 15, 67, 14);
         add(lblCantidad);
 
         JLabel lblPrecio = new JLabel("Precio:");
-        lblPrecio.setBounds(530, 11, 67, 14);
+        lblPrecio.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblPrecio.setBounds(564, 15, 46, 14);
         add(lblPrecio);
 
         JLabel lblTotal = new JLabel("Total a pagar:");
-        lblTotal.setBounds(362, 361, 89, 14);
+        lblTotal.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblTotal.setBounds(337, 361, 114, 14);
         add(lblTotal);
 
         JLabel lblClienteId = new JLabel("ID Cliente:");
-        lblClienteId.setBounds(79, 361, 67, 14);
+        lblClienteId.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblClienteId.setBounds(53, 361, 94, 14);
         add(lblClienteId);
+        
+     // Crear el JLabel para la categoría
+        JLabel labelCategoria = new JLabel("Categoría:");
+        labelCategoria.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        labelCategoria.setBounds(324, 11, 87, 23);  // Ajusta las coordenadas y tamaños según tu diseño
+        add(labelCategoria);
 
         textFielNombredeprocto = new JTextField();
-        textFielNombredeprocto.setBounds(43, 37, 147, 30);
+        textFielNombredeprocto.setBounds(10, 41, 147, 30);
         textFielNombredeprocto.addActionListener(e -> buscarProducto());
         add(textFielNombredeprocto);
 
         textFieldProducto = new JTextField();
-        textFieldProducto.setBounds(210, 37, 192, 30);
+        textFieldProducto.setBounds(167, 40, 147, 30);
         textFieldProducto.setEditable(false);
         add(textFieldProducto);
 
         textFieldCantidad = new JTextField();
-        textFieldCantidad.setBounds(415, 36, 67, 30);
+        textFieldCantidad.setBounds(449, 40, 67, 30);
         textFieldCantidad.addActionListener(e -> calcularTotal());
         add(textFieldCantidad);
 
         textFieldPrecio = new JTextField();
-        textFieldPrecio.setBounds(504, 37, 86, 30);
+        textFieldPrecio.setBounds(538, 41, 86, 30);
         textFieldPrecio.setEditable(false);
         add(textFieldPrecio);
 
@@ -92,12 +105,19 @@ public class PanelVenta extends JPanel {
         add(textFieldClienteId);
 
         textFieldStock = new JTextField();
-        textFieldStock.setBounds(613, 37, 86, 30);
+        textFieldStock.setBounds(647, 41, 86, 30);
         textFieldStock.setEditable(false);
         add(textFieldStock);
+        
+     // Crear el JTextField para mostrar la categoría
+        textFieldCategoria = new JTextField();
+        textFieldCategoria.setBounds(324, 40, 106, 31);  // Ajusta las coordenadas y tamaños según tu diseño
+        textFieldCategoria.setEditable(false);  // No debe ser editable, solo mostrar la categoría
+        add(textFieldCategoria);
 
         JLabel lblStock = new JLabel("Stock:");
-        lblStock.setBounds(629, 11, 46, 14);
+        lblStock.setFont(new Font("Times New Roman", Font.ITALIC, 15));
+        lblStock.setBounds(663, 15, 46, 14);
         add(lblStock);
 
      // Botón para generar la venta
@@ -128,17 +148,22 @@ public class PanelVenta extends JPanel {
     }
 
     private void buscarProducto() {
-        String codigoProducto = textFielNombredeprocto.getText();
-        String query = "SELECT nombre, precio, stock FROM productos WHERE id = ?";
+        // Obtener el código del producto ingresado
+        String codigoProducto = textFielNombredeprocto.getText();  // Asegúrate de que el nombre del campo esté correcto
+        String query = "SELECT nombre, precio, stock, categoria FROM productos WHERE id = ?";  // Agregar 'categoria'
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, codigoProducto);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                // Asignar los valores a los campos correspondientes
                 textFieldProducto.setText(rs.getString("nombre"));
                 textFieldPrecio.setText(String.valueOf(rs.getDouble("precio")));
                 textFieldStock.setText(String.valueOf(rs.getInt("stock")));
+                
+                // Agregar la categoría al JTextField correspondiente
+                textFieldCategoria.setText(rs.getString("categoria"));  // Ahora hace referencia al campo de clase
             } else {
                 JOptionPane.showMessageDialog(this, "Producto no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
                 limpiarCampos();
@@ -147,6 +172,8 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al buscar el producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
 
     private void calcularTotal() {
         try {

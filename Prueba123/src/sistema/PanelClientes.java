@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.awt.Color;
+import java.awt.Font;
 
 public class PanelClientes extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -26,59 +28,77 @@ public class PanelClientes extends JPanel {
         modeloTablaClientes = new DefaultTableModel(new String[]{"ID", "Nombre", "Email", "Teléfono", "Dirección"}, 0);
         table = new JTable(modeloTablaClientes);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(257, 49, 466, 283);
+        scrollPane.setBounds(258, 74, 524, 307);
         add(scrollPane);
 
         // Etiquetas
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(43, 52, 67, 14);
+        lblNombre.setFont(new Font("Times New Roman", Font.ITALIC, 14));
+        lblNombre.setBounds(27, 90, 67, 14);
         add(lblNombre);
 
         JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setBounds(42, 97, 46, 14);
+        lblEmail.setFont(new Font("Times New Roman", Font.ITALIC, 14));
+        lblEmail.setBounds(26, 135, 68, 14);
         add(lblEmail);
 
         JLabel lblTelefono = new JLabel("Teléfono:");
-        lblTelefono.setBounds(42, 144, 46, 14);
+        lblTelefono.setFont(new Font("Times New Roman", Font.ITALIC, 14));
+        lblTelefono.setBounds(26, 182, 68, 14);
         add(lblTelefono);
 
         JLabel lblDireccion = new JLabel("Dirección:");
-        lblDireccion.setBounds(42, 193, 68, 14);
+        lblDireccion.setFont(new Font("Times New Roman", Font.ITALIC, 14));
+        lblDireccion.setBounds(26, 231, 68, 14);
         add(lblDireccion);
 
         // Campos de texto
         textFieldNombre = new JTextField();
-        textFieldNombre.setBounds(117, 49, 120, 30);
+        textFieldNombre.setBounds(101, 87, 120, 30);
         add(textFieldNombre);
 
         textFieldEmail = new JTextField();
-        textFieldEmail.setBounds(117, 94, 120, 30);
+        textFieldEmail.setBounds(101, 132, 120, 30);
         add(textFieldEmail);
 
         textFieldTelefono = new JTextField();
-        textFieldTelefono.setBounds(117, 141, 120, 30);
+        textFieldTelefono.setBounds(101, 179, 120, 30);
         add(textFieldTelefono);
 
         textFieldDireccion = new JTextField();
-        textFieldDireccion.setBounds(117, 190, 120, 30);
+        textFieldDireccion.setBounds(101, 228, 120, 30);
         add(textFieldDireccion);
 
-        // Botones
+     // Botones
         JButton btnGuardar = new JButton("Guardar");
-        btnGuardar.setBounds(25, 276, 89, 23);
+        btnGuardar.setBounds(26, 301, 89, 23);
+        btnGuardar.setBackground(new Color(34, 139, 34)); // Fondo verde
+        btnGuardar.setForeground(Color.WHITE); // Texto blanco
         add(btnGuardar);
 
         JButton btnActualizar = new JButton("Actualizar");
-        btnActualizar.setBounds(137, 275, 89, 23);
+        btnActualizar.setBounds(138, 300, 89, 23);
+        btnActualizar.setBackground(new Color(30, 144, 255)); // Fondo azul
+        btnActualizar.setForeground(Color.WHITE); // Texto blanco
         add(btnActualizar);
 
         JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBounds(25, 309, 89, 23);
+        btnEliminar.setBounds(26, 334, 89, 23);
+        btnEliminar.setBackground(new Color(255, 99, 71)); // Fondo rojo
+        btnEliminar.setForeground(Color.WHITE); // Texto blanco
         add(btnEliminar);
 
         JButton btnNuevo = new JButton("Nuevo");
-        btnNuevo.setBounds(137, 309, 89, 23);
+        btnNuevo.setBounds(138, 334, 89, 23);
+        btnNuevo.setBackground(new Color(255, 165, 0)); // Fondo naranja
+        btnNuevo.setForeground(Color.WHITE); // Texto blanco
         add(btnNuevo);
+
+        
+        JLabel lblNewLabel = new JLabel("Agregar Nuevo Cliente ");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        lblNewLabel.setBounds(253, 26, 246, 23);
+        add(lblNewLabel);
 
         // Listeners de botones
         btnGuardar.addActionListener(new ActionListener() {
