@@ -29,15 +29,15 @@ public class PanelProveedor extends JPanel {
         add(lblEmailProveedor);
 
         txtNombreProveedor = new JTextField();
-        txtNombreProveedor.setBounds(120, 57, 120, 20);
+        txtNombreProveedor.setBounds(120, 57, 120, 30);
         add(txtNombreProveedor);
 
         txtTelefonoProveedor = new JTextField();
-        txtTelefonoProveedor.setBounds(120, 97, 120, 20);
+        txtTelefonoProveedor.setBounds(120, 97, 120, 30);
         add(txtTelefonoProveedor);
 
         txtEmailProveedor = new JTextField();
-        txtEmailProveedor.setBounds(120, 137, 120, 20);
+        txtEmailProveedor.setBounds(120, 137, 120, 30);
         add(txtEmailProveedor);
 
         // Tabla

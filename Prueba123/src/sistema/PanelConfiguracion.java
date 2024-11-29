@@ -23,7 +23,7 @@ public class PanelConfiguracion extends JPanel {
         add(lblRnc);
 
         txtRnc = new JTextField();
-        txtRnc.setBounds(120, 40, 150, 20);
+        txtRnc.setBounds(120, 40, 150, 30);
         add(txtRnc);
 
         JLabel lblNombreEmpresa = new JLabel("Nombre Empresa:");
@@ -31,7 +31,7 @@ public class PanelConfiguracion extends JPanel {
         add(lblNombreEmpresa);
 
         txtNombreEmpresa = new JTextField();
-        txtNombreEmpresa.setBounds(150, 80, 150, 20);
+        txtNombreEmpresa.setBounds(150, 80, 150, 30);
         add(txtNombreEmpresa);
 
         JLabel lblTelefonoConfig = new JLabel("Teléfono:");
@@ -39,7 +39,7 @@ public class PanelConfiguracion extends JPanel {
         add(lblTelefonoConfig);
 
         txtTelefono = new JTextField();
-        txtTelefono.setBounds(120, 120, 150, 20);
+        txtTelefono.setBounds(120, 120, 150, 30);
         add(txtTelefono);
 
         JLabel lblDireccionConfig = new JLabel("Dirección:");
@@ -47,7 +47,7 @@ public class PanelConfiguracion extends JPanel {
         add(lblDireccionConfig);
 
         txtDireccion = new JTextField();
-        txtDireccion.setBounds(120, 160, 250, 20);
+        txtDireccion.setBounds(120, 160, 250, 30);
         add(txtDireccion);
 
         // Botones de acción

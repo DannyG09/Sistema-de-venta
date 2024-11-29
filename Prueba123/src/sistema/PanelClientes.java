@@ -48,19 +48,19 @@ public class PanelClientes extends JPanel {
 
         // Campos de texto
         textFieldNombre = new JTextField();
-        textFieldNombre.setBounds(117, 49, 120, 20);
+        textFieldNombre.setBounds(117, 49, 120, 30);
         add(textFieldNombre);
 
         textFieldEmail = new JTextField();
-        textFieldEmail.setBounds(117, 94, 120, 20);
+        textFieldEmail.setBounds(117, 94, 120, 30);
         add(textFieldEmail);
 
         textFieldTelefono = new JTextField();
-        textFieldTelefono.setBounds(117, 141, 120, 20);
+        textFieldTelefono.setBounds(117, 141, 120, 30);
         add(textFieldTelefono);
 
         textFieldDireccion = new JTextField();
-        textFieldDireccion.setBounds(117, 190, 120, 20);
+        textFieldDireccion.setBounds(117, 190, 120, 30);
         add(textFieldDireccion);
 
         // Botones

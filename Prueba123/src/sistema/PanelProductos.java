@@ -49,24 +49,24 @@ public class PanelProductos extends JPanel {
         add(lblStockProducto);
 
         txtCodigoProducto = new JTextField();
-        txtCodigoProducto.setBounds(120, 57, 120, 20);
+        txtCodigoProducto.setBounds(120, 57, 120, 30);
         txtCodigoProducto.setEditable(false); // Código generado automáticamente
         add(txtCodigoProducto);
 
         txtNombreProducto = new JTextField();
-        txtNombreProducto.setBounds(120, 97, 120, 20);
+        txtNombreProducto.setBounds(120, 97, 120, 30);
         add(txtNombreProducto);
 
         txtCategoriaProducto = new JTextField();
-        txtCategoriaProducto.setBounds(120, 137, 120, 20);
+        txtCategoriaProducto.setBounds(120, 137, 120, 30);
         add(txtCategoriaProducto);
 
         txtPrecioProducto = new JTextField();
-        txtPrecioProducto.setBounds(120, 177, 120, 20);
+        txtPrecioProducto.setBounds(120, 177, 120, 30);
         add(txtPrecioProducto);
 
         txtStockProducto = new JTextField();
-        txtStockProducto.setBounds(120, 217, 120, 20);
+        txtStockProducto.setBounds(120, 217, 120, 30);
         add(txtStockProducto);
 
         // Tabla

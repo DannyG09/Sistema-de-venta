@@ -4,7 +4,6 @@ import guiapp.Conexion_bdd;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
-import java.time.LocalDate;
 
 public class PanelVenta extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -135,65 +134,77 @@ public class PanelVenta extends JPanel {
         }
     }
 
+    private void cargarDatosCliente() {
+        String clienteId = textFieldClienteId.getText(); // Obtener el ID del cliente ingresado
+        if (clienteId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor ingrese un ID de cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String query = "SELECT nombre, email, telefono, direccion FROM Clientes WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, Integer.parseInt(clienteId)); // Usamos el ID proporcionado para consultar el cliente
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Si se encuentra el cliente, llenar los campos con los datos obtenidos
+                String nombre = rs.getString("nombre");
+                String email = rs.getString("email");
+                String telefono = rs.getString("telefono");
+                String direccion = rs.getString("direccion");
+
+                // Mostrar los datos del cliente
+                JOptionPane.showMessageDialog(this, "Cliente encontrado:\nNombre: " + nombre + "\nEmail: " + email +
+                        "\nTeléfono: " + telefono + "\nDirección: " + direccion, "Datos Cliente", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Si no se encuentra el cliente, mostrar un mensaje
+                JOptionPane.showMessageDialog(this, "Cliente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void registrarVenta() {
         try {
-            // Validar campos
+            // Validar campos básicos
             if (textFieldProducto.getText().isEmpty() || textFieldCantidad.getText().isEmpty() ||
-                textFieldPrecio.getText().isEmpty() || textFieldStock.getText().isEmpty() ||
-                textFieldClienteId.getText().isEmpty()) {
+                textFieldPrecio.getText().isEmpty() || textFieldTotal.getText().isEmpty() || textFieldClienteId.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Validar ID Cliente
-            int idCliente;
-            try {
-                idCliente = Integer.parseInt(textFieldClienteId.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "El ID del cliente debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Verificar si el cliente existe
-            if (!clienteExiste(idCliente)) {
-                JOptionPane.showMessageDialog(this, "El cliente no existe.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validar cantidad
+            // Validar que la cantidad sea mayor a 0
             int cantidad = Integer.parseInt(textFieldCantidad.getText());
-            int stock = Integer.parseInt(textFieldStock.getText());
-
-            if (cantidad <= 0 || cantidad > stock) {
-                JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0 y no superar el stock disponible.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Insertar la venta
-            String queryVenta = "INSERT INTO Ventas (id, fecha, total) VALUES (?, ?, ?)"; // Usamos cliente_id
-            try (PreparedStatement stmtVenta = conn.prepareStatement(queryVenta, Statement.RETURN_GENERATED_KEYS)) {
-                stmtVenta.setInt(1, idCliente); // Usamos el ID Cliente validado
-                stmtVenta.setDate(2, Date.valueOf(LocalDate.now()));
-                stmtVenta.setDouble(3, Double.parseDouble(textFieldTotal.getText()));
-                int filasAfectadas = stmtVenta.executeUpdate();
+            // Obtener el ID del cliente y convertirlo a entero
+            int idCliente = Integer.parseInt(textFieldClienteId.getText());
 
+            // Obtener el precio y el total
+            double precio = Double.parseDouble(textFieldPrecio.getText());
+            double total = Double.parseDouble(textFieldTotal.getText());
+
+            // Insertar la venta principal con todos los valores
+            String queryVenta = "INSERT INTO Ventas (producto, cantidad, precio, total, cliente_id) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement stmtVenta = conn.prepareStatement(queryVenta, Statement.RETURN_GENERATED_KEYS)) {
+                stmtVenta.setString(1, textFieldProducto.getText()); // Producto
+                stmtVenta.setInt(2, cantidad); // Cantidad
+                stmtVenta.setDouble(3, precio); // Precio
+                stmtVenta.setDouble(4, total); // Total
+                stmtVenta.setInt(5, idCliente); // ID Cliente
+
+                int filasAfectadas = stmtVenta.executeUpdate();
                 if (filasAfectadas == 0) {
                     JOptionPane.showMessageDialog(this, "No se pudo registrar la venta.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                // Obtener ID de la venta generada
-                ResultSet rs = stmtVenta.getGeneratedKeys();
-                if (rs.next()) {
-                    int ventaId = rs.getInt(1);
-                    JOptionPane.showMessageDialog(this, "Venta registrada con ID: " + ventaId, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                }
-
-                // Actualizar stock
-                actualizarStock(Integer.parseInt(textFieldIdProducto.getText()), stock - cantidad);
-
                 // Agregar venta al modelo de la tabla
-                modeloTablaVenta.addRow(new Object[] {
+                modeloTablaVenta.addRow(new Object[]{
                     textFieldIdProducto.getText(),
                     textFieldProducto.getText(),
                     cantidad,
@@ -201,38 +212,17 @@ public class PanelVenta extends JPanel {
                     textFieldTotal.getText()
                 });
 
-                // Mostrar mensaje de "Venta realizada"
-                JOptionPane.showMessageDialog(this, "Venta realizada con éxito", "Venta Realizada", JOptionPane.INFORMATION_MESSAGE);
+                // Mostrar mensaje de éxito
+                JOptionPane.showMessageDialog(this, "Venta registrada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-                // Limpiar campos
+                // Limpiar los campos después de registrar la venta
                 limpiarCampos();
             }
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private boolean clienteExiste(int idCliente) {
-        String query = "SELECT COUNT(*) FROM Clientes WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, idCliente);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al verificar el cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        return false;
-    }
-
-    private void actualizarStock(int idProducto, int nuevoStock) throws SQLException {
-        String queryStock = "UPDATE productos SET stock = ? WHERE id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(queryStock)) {
-            stmt.setInt(1, nuevoStock);
-            stmt.setInt(2, idProducto);
-            stmt.executeUpdate();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos válidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -242,27 +232,7 @@ public class PanelVenta extends JPanel {
         textFieldCantidad.setText("");
         textFieldPrecio.setText("");
         textFieldTotal.setText("");
-        textFieldStock.setText("");
         textFieldClienteId.setText("");
-    }
-
-    private void cargarDatosCliente() {
-        try {
-            int idCliente = Integer.parseInt(textFieldClienteId.getText());
-            String query = "SELECT nombre FROM clientes WHERE id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, idCliente);
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    String nombreCliente = rs.getString("nombre");
-                    JOptionPane.showMessageDialog(this, "Cliente encontrado: " + nombreCliente, "Cliente", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Cliente no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        } catch (SQLException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar los datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        textFieldStock.setText("");
     }
 }
