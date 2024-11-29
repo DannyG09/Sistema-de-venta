@@ -114,6 +114,12 @@ public class GuiApp {
         tabbedPane.addTab("Productos", null, panelProductos, null);
         tabbedPane.addTab("Proveedor", null, panelProveedor, null);
         tabbedPane.addTab("Configuración", null, panelConfiguracion, null);
+        
+        JLabel lblNewLabel = new JLabel("D'GUERRERO TECHNOLOGY");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 21));
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setBounds(350, 23, 299, 16);
+        frame.getContentPane().add(lblNewLabel);
     }
 
     public static void main(String[] args) {

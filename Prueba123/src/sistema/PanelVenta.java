@@ -3,6 +3,9 @@ package sistema;
 import guiapp.Conexion_bdd;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import java.awt.Color;
+import java.io.FileOutputStream;
 import java.sql.*;
 
 public class PanelVenta extends JPanel {
@@ -51,7 +54,7 @@ public class PanelVenta extends JPanel {
         add(lblPrecio);
 
         JLabel lblTotal = new JLabel("Total a pagar:");
-        lblTotal.setBounds(453, 389, 89, 14);
+        lblTotal.setBounds(362, 361, 89, 14);
         add(lblTotal);
 
         JLabel lblClienteId = new JLabel("ID Cliente:");
@@ -79,7 +82,7 @@ public class PanelVenta extends JPanel {
         add(textFieldPrecio);
 
         textFieldTotal = new JTextField();
-        textFieldTotal.setBounds(530, 389, 181, 23);
+        textFieldTotal.setBounds(447, 356, 181, 23);
         textFieldTotal.setEditable(false);
         add(textFieldTotal);
 
@@ -97,17 +100,29 @@ public class PanelVenta extends JPanel {
         lblStock.setBounds(629, 11, 46, 14);
         add(lblStock);
 
-        // Botón para generar la venta
+     // Botón para generar la venta
         JButton btnGenerarVenta = new JButton("Generar Venta");
-        btnGenerarVenta.setBounds(530, 356, 181, 23);
-        btnGenerarVenta.addActionListener(e -> registrarVenta()); // Acción que se llama cuando se presiona el botón
+        btnGenerarVenta.setBounds(270, 409, 181, 23);
+        btnGenerarVenta.setBackground(new Color(34, 139, 34));  // Color de fondo verde
+        btnGenerarVenta.setForeground(Color.WHITE);  // Color del texto blanco
+        btnGenerarVenta.addActionListener(e -> registrarVenta());
         add(btnGenerarVenta);
 
         // Botón para eliminar la venta
         JButton btnEliminarVenta = new JButton("Eliminar Venta");
-        btnEliminarVenta.setBounds(339, 356, 181, 23);
-        btnEliminarVenta.addActionListener(e -> eliminarVenta()); // Acción que se llama cuando se presiona el botón
+        btnEliminarVenta.setBounds(79, 409, 181, 23);
+        btnEliminarVenta.setBackground(new Color(255, 99, 71));  // Color de fondo rojo
+        btnEliminarVenta.setForeground(Color.WHITE);  // Color del texto blanco
+        btnEliminarVenta.addActionListener(e -> eliminarVenta());
         add(btnEliminarVenta);
+
+        // Botón para generar el PDF
+        JButton btnGenerarPDF = new JButton("Generar PDF");
+        btnGenerarPDF.setBounds(461, 409, 181, 23);
+        btnGenerarPDF.setBackground(new Color(30, 144, 255));  // Color de fondo azul
+        btnGenerarPDF.setForeground(Color.WHITE);  // Color del texto blanco
+        btnGenerarPDF.addActionListener(e -> generarPDFVenta());
+        add(btnGenerarPDF);
         
        
     }
@@ -226,6 +241,55 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private void generarPDFVenta() {
+        // Ruta del archivo PDF
+        String rutaPDF = "ventas.pdf";
+
+        try {
+            // Crear el objeto Document
+            com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+            // Crear el escritor que apunta al archivo PDF
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, new FileOutputStream(rutaPDF));
+            // Abrir el documento
+            document.open();
+
+            // Agregar un título al documento
+            com.itextpdf.text.Font fontTitulo = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph titulo = new com.itextpdf.text.Paragraph("Resumen de Ventas", fontTitulo);
+            titulo.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            document.add(titulo);
+
+            // Espacio debajo del título
+            document.add(new com.itextpdf.text.Paragraph("\n"));
+
+            // Iterar por las filas de la tabla y agregar cada venta al PDF
+            for (int i = 0; i < modeloTablaVenta.getRowCount(); i++) {
+                String producto = (String) modeloTablaVenta.getValueAt(i, 0);
+                String cliente = (String) modeloTablaVenta.getValueAt(i, 1);
+                int cantidad = (int) modeloTablaVenta.getValueAt(i, 2);
+                double precio = (double) modeloTablaVenta.getValueAt(i, 3);
+                double total = (double) modeloTablaVenta.getValueAt(i, 4);
+
+                // Crear una línea para cada venta
+                String lineaVenta = String.format("Producto: %s | Cliente: %s | Cantidad: %d | Precio: %.2f | Total: %.2f",
+                        producto, cliente, cantidad, precio, total);
+
+                // Agregar la línea como un párrafo al documento
+                document.add(new com.itextpdf.text.Paragraph(lineaVenta));
+            }
+
+            // Cerrar el documento
+            document.close();
+
+            // Mostrar un mensaje de éxito
+            JOptionPane.showMessageDialog(this, "PDF generado correctamente en: " + rutaPDF, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            // Manejo de errores
+            JOptionPane.showMessageDialog(this, "Error al generar el PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     private void eliminarVenta() {
         int selectedRow = tableVenta.getSelectedRow();
