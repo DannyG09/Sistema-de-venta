@@ -10,14 +10,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.awt.Font;
 
 public class PanelProductos extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JTextField txtCodigoProducto, txtNombreProducto, txtCategoriaProducto, txtPrecioProducto, txtStockProducto;
+    private JTextField txtNombreProducto, txtPrecioProducto, txtStockProducto;
     private JTable tableProductos;
     private DefaultTableModel modeloTablaProductos;
     private JButton btnGuardarProducto, btnEliminarProducto;
     private Connection conn;
+    private JComboBox<String> comboCategoriaProducto; // Cambiar JTextField a JComboBox
 
     public PanelProductos() {
         conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
@@ -27,64 +29,70 @@ public class PanelProductos extends JPanel {
     }
 
     private void initializeComponents() {
-        // Etiquetas y campos de texto
-        JLabel lblCodigoProducto = new JLabel("Código:");
-        lblCodigoProducto.setBounds(30, 60, 80, 14);
-        add(lblCodigoProducto);
 
         JLabel lblNombreProducto = new JLabel("Nombre:");
-        lblNombreProducto.setBounds(30, 100, 80, 14);
+        lblNombreProducto.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblNombreProducto.setBounds(40, 123, 80, 14);
         add(lblNombreProducto);
 
         JLabel lblCategoriaProducto = new JLabel("Categoría:");
-        lblCategoriaProducto.setBounds(30, 140, 80, 14);
+        lblCategoriaProducto.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblCategoriaProducto.setBounds(40, 162, 80, 14);
         add(lblCategoriaProducto);
 
         JLabel lblPrecioProducto = new JLabel("Precio:");
-        lblPrecioProducto.setBounds(30, 180, 80, 14);
+        lblPrecioProducto.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblPrecioProducto.setBounds(40, 202, 80, 14);
         add(lblPrecioProducto);
 
         JLabel lblStockProducto = new JLabel("Stock:");
-        lblStockProducto.setBounds(30, 220, 80, 14);
+        lblStockProducto.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        lblStockProducto.setBounds(40, 242, 80, 14);
         add(lblStockProducto);
 
-        txtCodigoProducto = new JTextField();
-        txtCodigoProducto.setBounds(120, 57, 120, 30);
-        txtCodigoProducto.setEditable(false); // Código generado automáticamente
-        add(txtCodigoProducto);
-
         txtNombreProducto = new JTextField();
-        txtNombreProducto.setBounds(120, 97, 120, 30);
+        txtNombreProducto.setBounds(130, 120, 120, 30);
         add(txtNombreProducto);
 
-        txtCategoriaProducto = new JTextField();
-        txtCategoriaProducto.setBounds(120, 137, 120, 30);
-        add(txtCategoriaProducto);
+        // JComboBox para Categoría
+        comboCategoriaProducto = new JComboBox<>(new String[]{"Celulares", "Apple Watch", "Tablets", "Laptops"});
+        comboCategoriaProducto.setBounds(130, 159, 120, 30);
+        add(comboCategoriaProducto);
 
         txtPrecioProducto = new JTextField();
-        txtPrecioProducto.setBounds(120, 177, 120, 30);
+        txtPrecioProducto.setBounds(130, 199, 120, 30);
         add(txtPrecioProducto);
 
         txtStockProducto = new JTextField();
-        txtStockProducto.setBounds(120, 217, 120, 30);
+        txtStockProducto.setBounds(130, 239, 120, 30);
         add(txtStockProducto);
 
         // Tabla
         modeloTablaProductos = new DefaultTableModel(new String[]{"Código", "Nombre", "Categoría", "Precio", "Stock"}, 0);
         tableProductos = new JTable(modeloTablaProductos);
         JScrollPane scrollPaneProductos = new JScrollPane(tableProductos);
-        scrollPaneProductos.setBounds(270, 60, 400, 270);
+        scrollPaneProductos.setBounds(280, 83, 400, 270);
         add(scrollPaneProductos);
 
         // Botón de guardar
         btnGuardarProducto = new JButton("Guardar");
-        btnGuardarProducto.setBounds(30, 270, 90, 23);
+        btnGuardarProducto.setBounds(38, 293, 90, 23);
         add(btnGuardarProducto);
 
         // Botón de eliminar
         btnEliminarProducto = new JButton("Eliminar");
-        btnEliminarProducto.setBounds(130, 270, 90, 23);
+        btnEliminarProducto.setBounds(138, 293, 90, 23);
         add(btnEliminarProducto);
+        
+        JLabel lblNewLabel = new JLabel("Agregar Nuevos Productos");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 17));
+        lblNewLabel.setBounds(40, 78, 230, 23);
+        add(lblNewLabel);
+        
+        JLabel lblNewLabel_1 = new JLabel("D'Guerrero Technology");
+        lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        lblNewLabel_1.setBounds(245, 26, 335, 23);
+        add(lblNewLabel_1);
 
         // Acción del botón de guardar
         btnGuardarProducto.addActionListener(new ActionListener() {
@@ -106,7 +114,7 @@ public class PanelProductos extends JPanel {
     private void guardarProducto() {
         if (validarCampos()) {
             String nombre = txtNombreProducto.getText();
-            String categoria = txtCategoriaProducto.getText();
+            String categoria = (String) comboCategoriaProducto.getSelectedItem(); // Obtener selección del ComboBox
             double precio = Double.parseDouble(txtPrecioProducto.getText());
             int stock = Integer.parseInt(txtStockProducto.getText());
 
@@ -123,9 +131,9 @@ public class PanelProductos extends JPanel {
                 if (rowsAffected > 0) {
                     ResultSet rs = stmt.getGeneratedKeys();
                     if (rs.next()) {
-                        int codigo = rs.getInt(1);
-                        modeloTablaProductos.addRow(new Object[]{codigo, nombre, categoria, precio, stock});
-                        JOptionPane.showMessageDialog(this, "Producto guardado correctamente con código: " + codigo);
+                        int id = rs.getInt(1);  // Obtener el id generado
+                        modeloTablaProductos.addRow(new Object[]{id, nombre, categoria, precio, stock});  // Usar 'id' en lugar de 'codigo'
+                        JOptionPane.showMessageDialog(this, "Producto guardado correctamente con ID: " + id);
                         limpiarCampos();
                     }
                 }
@@ -136,8 +144,7 @@ public class PanelProductos extends JPanel {
     }
 
     private boolean validarCampos() {
-        if (txtNombreProducto.getText().isEmpty() || txtCategoriaProducto.getText().isEmpty() ||
-            txtPrecioProducto.getText().isEmpty() || txtStockProducto.getText().isEmpty()) {
+        if (txtNombreProducto.getText().isEmpty() || txtPrecioProducto.getText().isEmpty() || txtStockProducto.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -152,9 +159,8 @@ public class PanelProductos extends JPanel {
     }
 
     private void limpiarCampos() {
-        txtCodigoProducto.setText("");
         txtNombreProducto.setText("");
-        txtCategoriaProducto.setText("");
+        comboCategoriaProducto.setSelectedIndex(0); // Reiniciar al primer elemento
         txtPrecioProducto.setText("");
         txtStockProducto.setText("");
     }
@@ -165,7 +171,7 @@ public class PanelProductos extends JPanel {
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 modeloTablaProductos.addRow(new Object[]{
-                        rs.getInt("codigo"),
+                        rs.getInt("id"),            // Cambiar 'codigo' por 'id'
                         rs.getString("nombre"),
                         rs.getString("categoria"),
                         rs.getDouble("precio"),
@@ -180,20 +186,16 @@ public class PanelProductos extends JPanel {
     private void eliminarProducto() {
         int selectedRow = tableProductos.getSelectedRow();
         if (selectedRow != -1) {
-            // Obtener el código del producto seleccionado
-            int codigoProducto = (int) modeloTablaProductos.getValueAt(selectedRow, 0);
+            int idProducto = (int) modeloTablaProductos.getValueAt(selectedRow, 0);
 
-            // Confirmación antes de eliminar
             int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de eliminar este producto?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (confirmacion == JOptionPane.YES_OPTION) {
-                // Eliminar producto de la base de datos
-                String query = "DELETE FROM productos WHERE codigo = ?";
+                String query = "DELETE FROM productos WHERE id = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                    stmt.setInt(1, codigoProducto);
+                    stmt.setInt(1, idProducto);
                     int rowsAffected = stmt.executeUpdate();
 
                     if (rowsAffected > 0) {
-                        // Eliminar fila de la tabla
                         modeloTablaProductos.removeRow(selectedRow);
                         JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
                     } else {

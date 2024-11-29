@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class PanelVenta extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JTextField textFieldIdProducto, textFieldProducto, textFieldCantidad, textFieldPrecio, textFieldTotal, textFieldStock, textFieldClienteId;
+    private JTextField textFielNombredeprocto, textFieldProducto, textFieldCantidad, textFieldPrecio, textFieldTotal, textFieldStock, textFieldClienteId;
     private DefaultTableModel modeloTablaVenta;
     private JTable tableVenta;
     private Connection conn;
@@ -26,7 +26,7 @@ public class PanelVenta extends JPanel {
 
     private void initializeComponents() {
         // Modelo de la tabla para Venta
-        modeloTablaVenta = new DefaultTableModel(new String[]{"ID Producto", "Cliente", "Cantidad", "Precio", "Total"}, 0);
+        modeloTablaVenta = new DefaultTableModel(new String[]{"Código Producto", "Cliente", "Cantidad", "Precio", "Total"}, 0);
         tableVenta = new JTable(modeloTablaVenta);
         JScrollPane scrollPaneVenta = new JScrollPane(tableVenta);
         scrollPaneVenta.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -34,9 +34,9 @@ public class PanelVenta extends JPanel {
         add(scrollPaneVenta);
 
         // Etiquetas y campos de texto
-        JLabel lblIdProducto = new JLabel("ID Producto:");
-        lblIdProducto.setBounds(30, 11, 80, 14);
-        add(lblIdProducto);
+        JLabel lblCodigoProducto = new JLabel("Código Producto:");
+        lblCodigoProducto.setBounds(30, 11, 120, 14);
+        add(lblCodigoProducto);
 
         JLabel lblProducto = new JLabel("Producto:");
         lblProducto.setBounds(275, 11, 67, 14);
@@ -58,10 +58,10 @@ public class PanelVenta extends JPanel {
         lblClienteId.setBounds(79, 361, 67, 14);
         add(lblClienteId);
 
-        textFieldIdProducto = new JTextField();
-        textFieldIdProducto.setBounds(43, 37, 147, 30);
-        textFieldIdProducto.addActionListener(e -> buscarProducto());
-        add(textFieldIdProducto);
+        textFielNombredeprocto = new JTextField();
+        textFielNombredeprocto.setBounds(43, 37, 147, 30);
+        textFielNombredeprocto.addActionListener(e -> buscarProducto());
+        add(textFielNombredeprocto);
 
         textFieldProducto = new JTextField();
         textFieldProducto.setBounds(210, 37, 192, 30);
@@ -79,12 +79,12 @@ public class PanelVenta extends JPanel {
         add(textFieldPrecio);
 
         textFieldTotal = new JTextField();
-        textFieldTotal.setBounds(530, 386, 181, 30);
+        textFieldTotal.setBounds(530, 389, 181, 23);
         textFieldTotal.setEditable(false);
         add(textFieldTotal);
 
         textFieldClienteId = new JTextField();
-        textFieldClienteId.setBounds(195, 361, 120, 30);
+        textFieldClienteId.setBounds(139, 356, 140, 23);
         textFieldClienteId.addActionListener(e -> cargarDatosCliente()); // Llamar al método cuando se ingrese un ID de cliente
         add(textFieldClienteId);
 
@@ -102,14 +102,22 @@ public class PanelVenta extends JPanel {
         btnGenerarVenta.setBounds(530, 356, 181, 23);
         btnGenerarVenta.addActionListener(e -> registrarVenta()); // Acción que se llama cuando se presiona el botón
         add(btnGenerarVenta);
+
+        // Botón para eliminar la venta
+        JButton btnEliminarVenta = new JButton("Eliminar Venta");
+        btnEliminarVenta.setBounds(339, 356, 181, 23);
+        btnEliminarVenta.addActionListener(e -> eliminarVenta()); // Acción que se llama cuando se presiona el botón
+        add(btnEliminarVenta);
+        
+       
     }
 
     private void buscarProducto() {
-        String idProducto = textFieldIdProducto.getText();
+        String codigoProducto = textFielNombredeprocto.getText();
         String query = "SELECT nombre, precio, stock FROM productos WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, idProducto);
+            stmt.setString(1, codigoProducto);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -194,7 +202,7 @@ public class PanelVenta extends JPanel {
             // Insertar la venta principal con todos los valores
             String queryVenta = "INSERT INTO Ventas (producto, cantidad, precio, total, cliente_id) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement stmtVenta = conn.prepareStatement(queryVenta, Statement.RETURN_GENERATED_KEYS)) {
-                stmtVenta.setString(1, textFieldProducto.getText()); // Producto
+                stmtVenta.setString(1, textFielNombredeprocto.getText()); // Código del Producto
                 stmtVenta.setInt(2, cantidad); // Cantidad
                 stmtVenta.setDouble(3, precio); // Precio
                 stmtVenta.setDouble(4, total); // Total
@@ -205,57 +213,70 @@ public class PanelVenta extends JPanel {
                     JOptionPane.showMessageDialog(this, "No se pudo registrar la venta.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
                 // Agregar venta al modelo de la tabla
-                modeloTablaVenta.addRow(new Object[]{
-                    textFieldIdProducto.getText(), textFieldProducto.getText(), cantidad, precio, total
+                modeloTablaVenta.addRow(new Object[] {
+                		textFielNombredeprocto.getText(), textFieldProducto.getText(), cantidad, precio, total
                 });
 
-                JOptionPane.showMessageDialog(this, "Venta registrada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                // Limpiar campos
+                limpiarCampos();
             }
-
-            // Limpiar campos después de la venta
-            limpiarCampos();
-            cargarVentas(); // Recargar ventas en la tabla
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    private void eliminarVenta() {
+        int selectedRow = tableVenta.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una venta para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String producto = (String) modeloTablaVenta.getValueAt(selectedRow, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar la venta de producto " + producto + "?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            String query = "DELETE FROM Ventas WHERE producto = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, producto);
+                int rowsDeleted = stmt.executeUpdate();
+                if (rowsDeleted > 0) {
+                    modeloTablaVenta.removeRow(selectedRow); // Eliminar la fila de la tabla
+                    JOptionPane.showMessageDialog(this, "Venta eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo eliminar la venta.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private void limpiarCampos() {
-        textFieldIdProducto.setText("");
+        textFielNombredeprocto.setText("");
         textFieldProducto.setText("");
         textFieldCantidad.setText("");
         textFieldPrecio.setText("");
         textFieldTotal.setText("");
         textFieldStock.setText("");
-        textFieldClienteId.setText("");
     }
 
     private void cargarVentas() {
-        String query = "SELECT v.id, v.cliente_id, v.fecha, v.total, c.nombre FROM Ventas v " +
-                       "JOIN Clientes c ON v.cliente_id = c.id";
-        try (PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-
-            // Limpiar la tabla antes de agregar los nuevos registros
-            modeloTablaVenta.setRowCount(0);
-
-            // Recorrer los resultados y agregar las filas a la tabla
+        String query = "SELECT v.producto, v.cantidad, v.precio, v.total, c.nombre FROM Ventas v JOIN Clientes c ON v.cliente_id = c.id";
+        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                int idVenta = rs.getInt("id");
-                int clienteId = rs.getInt("cliente_id");
-                Date fecha = rs.getDate("fecha");
-                double total = rs.getDouble("total");
-                String nombreCliente = rs.getString("nombre");
-
-                // Agregar los datos a la tabla
-                modeloTablaVenta.addRow(new Object[]{idVenta, nombreCliente, clienteId, fecha, total});
+                modeloTablaVenta.addRow(new Object[]{
+                    rs.getString("producto"),
+                    rs.getString("nombre"),
+                    rs.getInt("cantidad"),
+                    rs.getDouble("precio"),
+                    rs.getDouble("total")
+                });
             }
-
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar las ventas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 }

@@ -26,7 +26,7 @@ public class PanelClientes extends JPanel {
         modeloTablaClientes = new DefaultTableModel(new String[]{"ID", "Nombre", "Email", "Teléfono", "Dirección"}, 0);
         table = new JTable(modeloTablaClientes);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(257, 49, 370, 283);
+        scrollPane.setBounds(257, 49, 466, 283);
         add(scrollPane);
 
         // Etiquetas
