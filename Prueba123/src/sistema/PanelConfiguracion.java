@@ -14,6 +14,23 @@ public class PanelConfiguracion extends JPanel {
     private JTextField txtRnc, txtNombreEmpresa, txtTelefono, txtDireccion;
     private Connection conn;
 
+    public String getRnc() {
+        return txtRnc.getText().trim();
+    }
+
+    public String getNombreEmpresa() {
+        return txtNombreEmpresa.getText().trim();
+    }
+
+    public String getTelefono() {
+        return txtTelefono.getText().trim();
+    }
+
+    public String getDireccion() {
+        return txtDireccion.getText().trim();
+    }
+
+
     public PanelConfiguracion() {
         conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
         setLayout(null);

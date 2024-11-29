@@ -322,6 +322,10 @@ public class PanelVenta extends JPanel {
             // Abrir el documento
             document.open();
 
+      
+
+          
+
             // Agregar un título al documento
             com.itextpdf.text.Font fontTitulo = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
             com.itextpdf.text.Paragraph titulo = new com.itextpdf.text.Paragraph("Resumen de Ventas", fontTitulo);
@@ -331,21 +335,48 @@ public class PanelVenta extends JPanel {
             // Espacio debajo del título
             document.add(new com.itextpdf.text.Paragraph("\n"));
 
+            // Variable para acumular el total de todas las ventas
+            double sumaTotal = 0.0;
+
             // Iterar por las filas de la tabla y agregar cada venta al PDF
             for (int i = 0; i < modeloTablaVenta.getRowCount(); i++) {
-                String producto = (String) modeloTablaVenta.getValueAt(i, 0);
-                String cliente = (String) modeloTablaVenta.getValueAt(i, 1);
-                int cantidad = (int) modeloTablaVenta.getValueAt(i, 2);
-                double precio = (double) modeloTablaVenta.getValueAt(i, 3);
-                double total = (double) modeloTablaVenta.getValueAt(i, 4);
+                Object codigoProducto = modeloTablaVenta.getValueAt(i, 0); // Código del Producto
+                Object nombreProducto = modeloTablaVenta.getValueAt(i, 1); // Nombre del Producto
+                Object categoriaProducto = modeloTablaVenta.getValueAt(i, 2); // Categoría del Producto
+                Object nombreCliente = modeloTablaVenta.getValueAt(i, 3); // Nombre del Cliente
+                Object cantidad = modeloTablaVenta.getValueAt(i, 4); // Cantidad
+                Object precio = modeloTablaVenta.getValueAt(i, 5); // Precio
+                Object total = modeloTablaVenta.getValueAt(i, 6); // Total
+
+                // Convertir el total a un número para acumular
+                double totalVenta = total != null ? Double.parseDouble(total.toString()) : 0.0;
+                sumaTotal += totalVenta;
 
                 // Crear una línea para cada venta
-                String lineaVenta = String.format("Producto: %s | Cliente: %s | Cantidad: %d | Precio: %.2f | Total: %.2f",
-                        producto, cliente, cantidad, precio, total);
+                String lineaVenta = String.format(
+                    "Código: %s | Producto: %s | Categoría: %s | Cliente: %s | Cantidad: %s | Precio: %s | Total: %.2f",
+                    codigoProducto != null ? codigoProducto.toString() : "",
+                    nombreProducto != null ? nombreProducto.toString() : "",
+                    categoriaProducto != null ? categoriaProducto.toString() : "",
+                    nombreCliente != null ? nombreCliente.toString() : "",
+                    cantidad != null ? cantidad.toString() : "",
+                    precio != null ? precio.toString() : "",
+                    totalVenta
+                );
 
                 // Agregar la línea como un párrafo al documento
                 document.add(new com.itextpdf.text.Paragraph(lineaVenta));
             }
+
+            // Espacio antes del total general
+            document.add(new com.itextpdf.text.Paragraph("\n"));
+
+            // Agregar el total general al PDF
+            com.itextpdf.text.Font fontTotal = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
+            String textoTotal = String.format("TOTAL GENERAL DE VENTAS: $%.2f", sumaTotal);
+            com.itextpdf.text.Paragraph totalGeneral = new com.itextpdf.text.Paragraph(textoTotal, fontTotal);
+            totalGeneral.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
+            document.add(totalGeneral);
 
             // Cerrar el documento
             document.close();
@@ -358,6 +389,7 @@ public class PanelVenta extends JPanel {
         }
     }
 
+  
 
     private void eliminarVenta() {
         int selectedRow = tableVenta.getSelectedRow();
