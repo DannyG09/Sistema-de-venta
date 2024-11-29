@@ -21,6 +21,12 @@ public class GuiApp {
     private JTabbedPane tabbedPane;
     private JPanel panelLateral;
     
+ // Método público para obtener el frame
+    public JFrame getFrame() {
+        return frame;
+    }
+    
+    
     // Constructor con parámetros para recibir los paneles
     public GuiApp(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
         initialize(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
@@ -101,10 +107,12 @@ public class GuiApp {
         btnConfiguracion.addActionListener(e -> tabbedPane.setSelectedIndex(4)); // Selecciona la pestaña de "Configuración"
         panelLateral.add(btnConfiguracion);
 
-        // Configuración del JTabbedPane
+     // Configuración del JTabbedPane
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setForeground(new Color(255, 255, 255));
-        tabbedPane.setBackground(new Color(255, 255, 255));
+        tabbedPane.setForeground(new Color(0, 0, 0)); // Establecer el color del texto a negro
+        tabbedPane.setBackground(new Color(255, 255, 255)); // Establecer el color de fondo a blanco
+        tabbedPane.setFont(new Font("Arial", Font.BOLD, 14)); // Establecer una fuente legible
+
         tabbedPane.setBounds(124, 49, 789, 464);
         frame.getContentPane().add(tabbedPane);
 
