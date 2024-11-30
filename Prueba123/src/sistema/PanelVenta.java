@@ -1,11 +1,12 @@
 package sistema;
 
 import guiapp.Conexion_bdd;
+import util.GeneradorPDFVenta;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Color;
-import java.io.FileOutputStream;
 import java.sql.*;
 import java.awt.Font;
 
@@ -141,10 +142,16 @@ public class PanelVenta extends JPanel {
         btnGenerarPDF.setBounds(461, 409, 181, 23);
         btnGenerarPDF.setBackground(new Color(30, 144, 255));  // Color de fondo azul
         btnGenerarPDF.setForeground(Color.WHITE);  // Color del texto blanco
-        btnGenerarPDF.addActionListener(e -> generarPDFVenta());
+        btnGenerarPDF.addActionListener(e -> {
+            // Instanciar GeneradorPDFVenta con la JTable correspondiente
+            GeneradorPDFVenta generadorPDF = new GeneradorPDFVenta(tableVenta);
+            // Definir el título del PDF y la ruta donde guardarlo
+            String tituloPDF = "Reporte de Ventas";
+            String rutaPDF = System.getProperty("user.home") + "/ventas.pdf"; // Ruta para guardar el PDF
+            // Llamar al método para generar el PDF
+            generadorPDF.generarPDF(tituloPDF, rutaPDF);
+        });
         add(btnGenerarPDF);
-        
-       
     }
 
     private void buscarProducto() {
@@ -218,8 +225,6 @@ public class PanelVenta extends JPanel {
         }
     }
     
-    
-
     private void registrarVenta() {
         try {
             // Validar campos básicos
@@ -306,90 +311,8 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
     
-    
-    private void generarPDFVenta() {
-        // Ruta del archivo PDF
-        String rutaPDF = "ventas.pdf";
 
-        try {
-            // Crear el objeto Document
-            com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-            // Crear el escritor que apunta al archivo PDF
-            com.itextpdf.text.pdf.PdfWriter.getInstance(document, new FileOutputStream(rutaPDF));
-            // Abrir el documento
-            document.open();
-
-      
-
-          
-
-            // Agregar un título al documento
-            com.itextpdf.text.Font fontTitulo = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
-            com.itextpdf.text.Paragraph titulo = new com.itextpdf.text.Paragraph("Resumen de Ventas", fontTitulo);
-            titulo.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-            document.add(titulo);
-
-            // Espacio debajo del título
-            document.add(new com.itextpdf.text.Paragraph("\n"));
-
-            // Variable para acumular el total de todas las ventas
-            double sumaTotal = 0.0;
-
-            // Iterar por las filas de la tabla y agregar cada venta al PDF
-            for (int i = 0; i < modeloTablaVenta.getRowCount(); i++) {
-                Object codigoProducto = modeloTablaVenta.getValueAt(i, 0); // Código del Producto
-                Object nombreProducto = modeloTablaVenta.getValueAt(i, 1); // Nombre del Producto
-                Object categoriaProducto = modeloTablaVenta.getValueAt(i, 2); // Categoría del Producto
-                Object nombreCliente = modeloTablaVenta.getValueAt(i, 3); // Nombre del Cliente
-                Object cantidad = modeloTablaVenta.getValueAt(i, 4); // Cantidad
-                Object precio = modeloTablaVenta.getValueAt(i, 5); // Precio
-                Object total = modeloTablaVenta.getValueAt(i, 6); // Total
-
-                // Convertir el total a un número para acumular
-                double totalVenta = total != null ? Double.parseDouble(total.toString()) : 0.0;
-                sumaTotal += totalVenta;
-
-                // Crear una línea para cada venta
-                String lineaVenta = String.format(
-                    "Código: %s | Producto: %s | Categoría: %s | Cliente: %s | Cantidad: %s | Precio: %s | Total: %.2f",
-                    codigoProducto != null ? codigoProducto.toString() : "",
-                    nombreProducto != null ? nombreProducto.toString() : "",
-                    categoriaProducto != null ? categoriaProducto.toString() : "",
-                    nombreCliente != null ? nombreCliente.toString() : "",
-                    cantidad != null ? cantidad.toString() : "",
-                    precio != null ? precio.toString() : "",
-                    totalVenta
-                );
-
-                // Agregar la línea como un párrafo al documento
-                document.add(new com.itextpdf.text.Paragraph(lineaVenta));
-            }
-
-            // Espacio antes del total general
-            document.add(new com.itextpdf.text.Paragraph("\n"));
-
-            // Agregar el total general al PDF
-            com.itextpdf.text.Font fontTotal = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
-            String textoTotal = String.format("TOTAL GENERAL DE VENTAS: $%.2f", sumaTotal);
-            com.itextpdf.text.Paragraph totalGeneral = new com.itextpdf.text.Paragraph(textoTotal, fontTotal);
-            totalGeneral.setAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
-            document.add(totalGeneral);
-
-            // Cerrar el documento
-            document.close();
-
-            // Mostrar un mensaje de éxito
-            JOptionPane.showMessageDialog(this, "PDF generado correctamente en: " + rutaPDF, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            // Manejo de errores
-            JOptionPane.showMessageDialog(this, "Error al generar el PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-  
 
     private void eliminarVenta() {
         int selectedRow = tableVenta.getSelectedRow();
@@ -449,7 +372,4 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al cargar las ventas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
-    
 }
