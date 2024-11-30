@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.awt.Font;
 
 public class PanelConfiguracion extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -41,45 +42,54 @@ public class PanelConfiguracion extends JPanel {
     private void initializeComponents() {
         // Etiquetas y campos de texto
         JLabel lblRnc = new JLabel("RNC:");
-        lblRnc.setBounds(30, 40, 80, 20);
+        lblRnc.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        lblRnc.setBounds(38, 148, 80, 20);
         add(lblRnc);
 
         txtRnc = new JTextField();
-        txtRnc.setBounds(120, 40, 150, 30);
+        txtRnc.setBounds(111, 143, 393, 30);
         add(txtRnc);
 
         JLabel lblNombreEmpresa = new JLabel("Nombre Empresa:");
-        lblNombreEmpresa.setBounds(30, 80, 120, 20);
+        lblNombreEmpresa.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        lblNombreEmpresa.setBounds(228, 202, 120, 20);
         add(lblNombreEmpresa);
 
         txtNombreEmpresa = new JTextField();
-        txtNombreEmpresa.setBounds(150, 80, 150, 30);
+        txtNombreEmpresa.setBounds(360, 198, 393, 30);
         add(txtNombreEmpresa);
 
         JLabel lblTelefonoConfig = new JLabel("Teléfono:");
-        lblTelefonoConfig.setBounds(30, 120, 80, 20);
+        lblTelefonoConfig.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        lblTelefonoConfig.setBounds(10, 250, 80, 20);
         add(lblTelefonoConfig);
 
         txtTelefono = new JTextField();
-        txtTelefono.setBounds(120, 120, 150, 30);
+        txtTelefono.setBounds(100, 250, 393, 30);
         add(txtTelefono);
 
         JLabel lblDireccionConfig = new JLabel("Dirección:");
-        lblDireccionConfig.setBounds(30, 160, 80, 20);
+        lblDireccionConfig.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        lblDireccionConfig.setBounds(262, 306, 80, 20);
         add(lblDireccionConfig);
 
         txtDireccion = new JTextField();
-        txtDireccion.setBounds(120, 160, 250, 30);
+        txtDireccion.setBounds(352, 306, 393, 30);
         add(txtDireccion);
 
         // Botones de acción
         JButton btnGuardarConfiguracion = new JButton("Guardar");
-        btnGuardarConfiguracion.setBounds(30, 200, 100, 30);
+        btnGuardarConfiguracion.setBounds(228, 357, 100, 30);
         add(btnGuardarConfiguracion);
 
         JButton btnCancelarConfiguracion = new JButton("Cancelar");
-        btnCancelarConfiguracion.setBounds(140, 200, 100, 30);
+        btnCancelarConfiguracion.setBounds(338, 357, 100, 30);
         add(btnCancelarConfiguracion);
+        
+        JLabel lblNewLabel = new JLabel("Datos de la Empresa");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 24));
+        lblNewLabel.setBounds(249, 49, 348, 45);
+        add(lblNewLabel);
 
         // Acción para guardar los datos de configuración
         btnGuardarConfiguracion.addActionListener(new ActionListener() {
