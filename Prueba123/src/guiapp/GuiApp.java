@@ -3,13 +3,13 @@ package guiapp;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
 import sistema.PanelClientes;
 import sistema.PanelConfiguracion;
 import sistema.PanelProductos;
@@ -21,11 +21,10 @@ public class GuiApp {
     private JTabbedPane tabbedPane;
     private JPanel panelLateral;
     
- // Método público para obtener el frame
+    // Método público para obtener el frame
     public JFrame getFrame() {
         return frame;
     }
-    
     
     // Constructor con parámetros para recibir los paneles
     public GuiApp(JPanel panelVenta, JPanel panelClientes, JPanel panelProductos, JPanel panelProveedor, JPanel panelConfiguracion) {
@@ -48,21 +47,20 @@ public class GuiApp {
         panelLateral.setLayout(null);
         frame.getContentPane().add(panelLateral);
 
+        // Cargar el logo utilizando la nueva función loadImageIcon
         try {
-            // Ruta de la imagen del logo
-            String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).jpg";
-            ImageIcon iconLogo = new ImageIcon(rutaLogo);
+            ImageIcon logoIcon = loadImageIcon("Logo de D'guerrero (Guiapp).png.png");
+            if (logoIcon != null) {
+                // Escalar la imagen del logo para ajustarse al tamaño del JLabel
+                Image imagenEscalada = logoIcon.getImage().getScaledInstance(126, 111, Image.SCALE_SMOOTH);
+                ImageIcon logoEscalado = new ImageIcon(imagenEscalada);
 
-            // Escalar la imagen del logo para ajustarse al tamaño del JLabel
-            Image imagenEscalada = iconLogo.getImage().getScaledInstance(126, 111, Image.SCALE_SMOOTH);
-            ImageIcon logoEscalado = new ImageIcon(imagenEscalada);
-
-            // Crear y configurar el JLabel con el logo
-            JLabel lblLogo = new JLabel();
-            lblLogo.setIcon(logoEscalado);
-            lblLogo.setBounds(0, 0, 126, 111);
-            panelLateral.add(lblLogo);
-
+                // Crear y configurar el JLabel con el logo
+                JLabel lblLogo = new JLabel();
+                lblLogo.setIcon(logoEscalado);
+                lblLogo.setBounds(0, 0, 126, 111);
+                panelLateral.add(lblLogo);
+            }
         } catch (Exception e) {
             // Mostrar mensaje si ocurre un error cargando el logo
             JLabel lblError = new JLabel("Logo no disponible");
@@ -72,42 +70,14 @@ public class GuiApp {
             System.err.println("Error al cargar el logo: " + e.getMessage());
         }
 
-        // Botón para "Venta"
-        JButton btnVenta = new JButton("Venta");
-        btnVenta.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnVenta.setBounds(12, 149, 95, 23);
-        btnVenta.addActionListener(e -> tabbedPane.setSelectedIndex(0)); // Selecciona la pestaña de "Venta"
-        panelLateral.add(btnVenta);
+        // Botones
+        createButton("Venta", 149, e -> tabbedPane.setSelectedIndex(0));
+        createButton("Clientes", 189, e -> tabbedPane.setSelectedIndex(1));
+        createButton("Productos", 229, e -> tabbedPane.setSelectedIndex(2));
+        createButton("Proveedor", 269, e -> tabbedPane.setSelectedIndex(3));
+        createButton("Configuración", 309, e -> tabbedPane.setSelectedIndex(4));
 
-        // Botón para "Clientes"
-        JButton btnClientes = new JButton("Clientes");
-        btnClientes.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnClientes.setBounds(12, 189, 95, 23);
-        btnClientes.addActionListener(e -> tabbedPane.setSelectedIndex(1)); // Selecciona la pestaña de "Clientes"
-        panelLateral.add(btnClientes);
-
-        // Botón para "Productos"
-        JButton btnProductos = new JButton("Productos");
-        btnProductos.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnProductos.setBounds(12, 229, 95, 23);
-        btnProductos.addActionListener(e -> tabbedPane.setSelectedIndex(2)); // Selecciona la pestaña de "Productos"
-        panelLateral.add(btnProductos);
-
-        // Botón para "Proveedor"
-        JButton btnProveedor = new JButton("Proveedor");
-        btnProveedor.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnProveedor.setBounds(12, 269, 95, 23);
-        btnProveedor.addActionListener(e -> tabbedPane.setSelectedIndex(3)); // Selecciona la pestaña de "Proveedor"
-        panelLateral.add(btnProveedor);
-
-        // Botón para "Configuración"
-        JButton btnConfiguracion = new JButton("Configuración");
-        btnConfiguracion.setFont(new Font("Times New Roman", Font.ITALIC, 13));
-        btnConfiguracion.setBounds(12, 309, 95, 23);
-        btnConfiguracion.addActionListener(e -> tabbedPane.setSelectedIndex(4)); // Selecciona la pestaña de "Configuración"
-        panelLateral.add(btnConfiguracion);
-
-     // Configuración del JTabbedPane
+        // Configuración del JTabbedPane
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setForeground(new Color(0, 0, 0)); // Establecer el color del texto a negro
         tabbedPane.setBackground(new Color(255, 255, 255)); // Establecer el color de fondo a blanco
@@ -122,7 +92,8 @@ public class GuiApp {
         tabbedPane.addTab("Productos", null, panelProductos, null);
         tabbedPane.addTab("Proveedor", null, panelProveedor, null);
         tabbedPane.addTab("Configuración", null, panelConfiguracion, null);
-        
+
+        // Título de la aplicación
         JLabel lblNewLabel = new JLabel("D'GUERRERO TECHNOLOGY");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 21));
         lblNewLabel.setForeground(new Color(255, 255, 255));
@@ -130,25 +101,38 @@ public class GuiApp {
         frame.getContentPane().add(lblNewLabel);
     }
 
-    public static void main(String[] args) {
-        // Establecer el Look and Feel Nimbus
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // Si Nimbus no está disponible, usar Look and Feel Cross-Platform
-            try {
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            } catch (Exception ex) {
-                // Manejo de excepción si no se puede establecer un Look and Feel
-                ex.printStackTrace();
-            }
-        }
+    // Crear un botón para evitar duplicación de código
+    private void createButton(String text, int yPosition, java.awt.event.ActionListener action) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Times New Roman", Font.ITALIC, 13));
+        button.setBounds(12, yPosition, 95, 23);
+        button.addActionListener(action);
+        panelLateral.add(button);
+    }
 
+    // Método para cargar una imagen desde los recursos
+    private static ImageIcon loadImageIcon(String fileName) {
+        URL resource = getResourcePath(fileName);
+        if (resource != null) {
+            return new ImageIcon(resource);
+        } else {
+            System.err.println("Error: No se pudo cargar la imagen: " + fileName);
+            return null;
+        }
+    }
+
+    // Método para obtener la ruta del recurso
+    private static URL getResourcePath(String fileName) {
+        URL resource = GuiApp.class.getClassLoader().getResource(fileName);
+        if (resource == null) {
+            System.err.println("No se encontró el recurso: " + fileName);
+        } else {
+            System.out.println("Recurso cargado correctamente: " + fileName);
+        }
+        return resource;
+    }
+
+    public static void main(String[] args) {
         // Crear los paneles
         JPanel panelVenta = new PanelVenta();
         JPanel panelClientes = new PanelClientes();
