@@ -4,12 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import guiapp.Conexion_bdd;
 import guiapp.GuiApp;
 import sistema.PanelClientes;
 import sistema.PanelConfiguracion;
 import sistema.PanelProductos;
 import sistema.PanelProveedor;
 import sistema.PanelVenta;
+import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginApp {
     public static void main(String[] args) {
@@ -39,7 +44,7 @@ public class LoginApp {
         // VENTANA DE LOGIN
         JFrame frame = new JFrame("Inicio de Sesión");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(571, 488);
+        frame.setSize(759, 488);
         frame.getContentPane().setLayout(null);
 
         // JFRAME
@@ -49,7 +54,7 @@ public class LoginApp {
         JLabel titleLabel = new JLabel("");
         titleLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\iniciar.png"));
         titleLabel.setForeground(new Color(255, 255, 255));
-        titleLabel.setBounds(94, 46, 200, 71);
+        titleLabel.setBounds(314, 67, 200, 71);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         frame.getContentPane().add(titleLabel);
@@ -57,12 +62,12 @@ public class LoginApp {
         // USUARIO
         JLabel userLabel = new JLabel("Usuario:");
         userLabel.setForeground(new Color(255, 255, 255));
-        userLabel.setBounds(44, 155, 100, 25);
+        userLabel.setBounds(264, 178, 100, 25);
         userLabel.setFont(new Font("Times New Roman", Font.ITALIC, 16));
         frame.getContentPane().add(userLabel);
 
         JTextField userField = new JTextField();
-        userField.setBounds(144, 155, 200, 25);
+        userField.setBounds(364, 178, 200, 25);
         userField.setFont(new Font("Arial", Font.PLAIN, 14));
         userField.setBorder(BorderFactory.createLineBorder(new Color(173, 216, 230), 1));
         frame.getContentPane().add(userField);
@@ -70,19 +75,19 @@ public class LoginApp {
         // CONTRASEÑA
         JLabel passLabel = new JLabel("Contraseña:");
         passLabel.setForeground(new Color(255, 255, 255));
-        passLabel.setBounds(44, 205, 100, 25);
+        passLabel.setBounds(264, 228, 100, 25);
         passLabel.setFont(new Font("Times New Roman", Font.ITALIC, 16));
         frame.getContentPane().add(passLabel);
 
         JPasswordField passField = new JPasswordField();
-        passField.setBounds(144, 205, 200, 25);
+        passField.setBounds(364, 228, 200, 25);
         passField.setFont(new Font("Arial", Font.PLAIN, 14));
         passField.setBorder(BorderFactory.createLineBorder(new Color(173, 216, 230), 1));
         frame.getContentPane().add(passField);
 
         // BOTÓN LOGIN
         JButton loginButton = new JButton("Ingresar");
-        loginButton.setBounds(94, 264, 200, 30);
+        loginButton.setBounds(314, 287, 200, 30);
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
         loginButton.setBackground(new Color(100, 149, 237));
         loginButton.setForeground(Color.WHITE);
@@ -90,12 +95,20 @@ public class LoginApp {
         loginButton.setBorder(BorderFactory.createEmptyBorder());
         frame.getContentPane().add(loginButton);
 
+        // Imagen lateral izquierda
         JLabel lblNewLabel = new JLabel("");
-        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\login.jpg"));
-        lblNewLabel.setBounds(368, 0, 187, 449);
+        lblNewLabel.setForeground(new Color(51, 51, 51));
+        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Gris y Blanco Moderno Foto Lateral Celular Descuentos Negocio Tu Historia (1).png"));
+        lblNewLabel.setBounds(0, 0, 224, 449);
         frame.getContentPane().add(lblNewLabel);
+        
+        // Logo en la esquina superior derecha
+        JLabel lblNewLabel_1 = new JLabel("");
+        lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).png"));
+        lblNewLabel_1.setBounds(611, 0, 165, 129);
+        frame.getContentPane().add(lblNewLabel_1);
 
-        // ACCIÓN DEL BOTÓN
+        // Botón de acción
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -103,7 +116,7 @@ public class LoginApp {
                 String password = new String(passField.getPassword());
 
                 // VALIDAR CREDENCIALES
-                if ("VDE".equals(username) && "VDE23".equals(password)) {
+                if (validarCredenciales(username, password)) {
                     JOptionPane.showMessageDialog(frame, "INICIO DE SESION EXITOSO", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
                     // Abrir GuiApp en el hilo de Swing
@@ -137,5 +150,40 @@ public class LoginApp {
         // Crear la ventana principal con los paneles
         GuiApp window = new GuiApp(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
         window.getFrame().setVisible(true); // Usar el método público para obtener el frame
+    }
+
+    private static boolean validarCredenciales(String username, String password) {
+        Connection conn = Conexion_bdd.getConnection(); // Mantener la conexión abierta
+        try {
+            // Hashear la contraseña ingresada con SHA-256
+            String hashedPassword = hashPassword(password);
+
+            // Query para validar las credenciales
+            String query = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, hashedPassword);
+            ResultSet rs = stmt.executeQuery();
+
+            // Si hay resultados, el usuario existe y la contraseña es correcta
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar las credenciales: " + e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("Error al aplicar el hash SHA-256: " + e.getMessage());
+        }
+        return false; // Si no se encuentra el usuario
+    }
+
+    private static String hashPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(password.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }
