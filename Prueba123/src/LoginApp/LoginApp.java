@@ -13,6 +13,24 @@ import sistema.PanelVenta;
 
 public class LoginApp {
     public static void main(String[] args) {
+        // Configurar el Look and Feel Nimbus
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // Si Nimbus no está disponible, se establece un Look and Feel genérico
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (Exception ex) {
+                // Manejo de excepción en caso de falla
+                ex.printStackTrace();
+            }
+        }
+
         // Llamamos al Login
         iniciarLogin();
     }
@@ -21,52 +39,61 @@ public class LoginApp {
         // VENTANA DE LOGIN
         JFrame frame = new JFrame("Inicio de Sesión");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(null);
+        frame.setSize(571, 488);
+        frame.getContentPane().setLayout(null);
 
         // JFRAME
-        frame.getContentPane().setBackground(new Color(240, 248, 255));
+        frame.getContentPane().setBackground(new Color(0, 0, 64));
 
         // TITULO
-        JLabel titleLabel = new JLabel("Iniciar Sesión");
-        titleLabel.setBounds(120, 20, 200, 30);
+        JLabel titleLabel = new JLabel("");
+        titleLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\iniciar.png"));
+        titleLabel.setForeground(new Color(255, 255, 255));
+        titleLabel.setBounds(94, 46, 200, 71);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        frame.add(titleLabel);
+        frame.getContentPane().add(titleLabel);
 
         // USUARIO
         JLabel userLabel = new JLabel("Usuario:");
-        userLabel.setBounds(50, 80, 100, 25);
-        userLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        frame.add(userLabel);
+        userLabel.setForeground(new Color(255, 255, 255));
+        userLabel.setBounds(44, 155, 100, 25);
+        userLabel.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        frame.getContentPane().add(userLabel);
 
         JTextField userField = new JTextField();
-        userField.setBounds(150, 80, 200, 25);
+        userField.setBounds(144, 155, 200, 25);
         userField.setFont(new Font("Arial", Font.PLAIN, 14));
         userField.setBorder(BorderFactory.createLineBorder(new Color(173, 216, 230), 1));
-        frame.add(userField);
+        frame.getContentPane().add(userField);
 
         // CONTRASEÑA
         JLabel passLabel = new JLabel("Contraseña:");
-        passLabel.setBounds(50, 130, 100, 25);
-        passLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        frame.add(passLabel);
+        passLabel.setForeground(new Color(255, 255, 255));
+        passLabel.setBounds(44, 205, 100, 25);
+        passLabel.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+        frame.getContentPane().add(passLabel);
 
         JPasswordField passField = new JPasswordField();
-        passField.setBounds(150, 130, 200, 25);
+        passField.setBounds(144, 205, 200, 25);
         passField.setFont(new Font("Arial", Font.PLAIN, 14));
         passField.setBorder(BorderFactory.createLineBorder(new Color(173, 216, 230), 1));
-        frame.add(passField);
+        frame.getContentPane().add(passField);
 
         // BOTÓN LOGIN
         JButton loginButton = new JButton("Ingresar");
-        loginButton.setBounds(150, 190, 200, 30);
+        loginButton.setBounds(94, 264, 200, 30);
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
         loginButton.setBackground(new Color(100, 149, 237));
         loginButton.setForeground(Color.WHITE);
         loginButton.setFocusPainted(false);
         loginButton.setBorder(BorderFactory.createEmptyBorder());
-        frame.add(loginButton);
+        frame.getContentPane().add(loginButton);
+
+        JLabel lblNewLabel = new JLabel("");
+        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\login.jpg"));
+        lblNewLabel.setBounds(368, 0, 187, 449);
+        frame.getContentPane().add(lblNewLabel);
 
         // ACCIÓN DEL BOTÓN
         loginButton.addActionListener(new ActionListener() {
@@ -78,7 +105,7 @@ public class LoginApp {
                 // VALIDAR CREDENCIALES
                 if ("VDE".equals(username) && "VDE23".equals(password)) {
                     JOptionPane.showMessageDialog(frame, "INICIO DE SESION EXITOSO", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    
+
                     // Abrir GuiApp en el hilo de Swing
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -109,6 +136,6 @@ public class LoginApp {
 
         // Crear la ventana principal con los paneles
         GuiApp window = new GuiApp(panelVenta, panelClientes, panelProductos, panelProveedor, panelConfiguracion);
-        window.getFrame().setVisible(true);  // Usar el método público para obtener el frame
+        window.getFrame().setVisible(true); // Usar el método público para obtener el frame
     }
 }
