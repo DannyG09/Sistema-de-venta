@@ -8,6 +8,13 @@ import java.io.FileOutputStream;
 
 public abstract class GeneradorPDF {
 
+    // Información de la empresa
+    private String nombreEmpresa = "Nombre de la Empresa";
+    private String rnc = "RNC 123456789";
+    private String telefono = "Tel: 809-123-4567";
+    private String direccion = "Dirección: Calle 123, Ciudad, País";
+    private String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).jpg"; // Ruta del logo
+
     // Método abstracto para obtener el modelo de la tabla
     protected abstract TableModel getModeloTabla();
 
@@ -20,6 +27,27 @@ public abstract class GeneradorPDF {
             PdfWriter.getInstance(document, new FileOutputStream(rutaPDF));
             // Abrir el documento
             document.open();
+
+            // Cargar y agregar el logo
+            Image logo = Image.getInstance(rutaLogo);
+            logo.scaleToFit(100, 100); // Escalar la imagen al tamaño adecuado (ajústalo a tu gusto)
+            
+            // Establecer la posición de la imagen en la esquina derecha
+            logo.setAbsolutePosition(document.getPageSize().getWidth() - logo.getScaledWidth() - 20, document.getPageSize().getHeight() - logo.getScaledHeight() - 20);
+            document.add(logo);
+
+            // Espacio debajo del logo
+            document.add(new Paragraph("\n"));
+
+            // Agregar la información de la empresa
+            Font fontEmpresa = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+            document.add(new Paragraph(nombreEmpresa, fontEmpresa));
+            document.add(new Paragraph(rnc, fontEmpresa));
+            document.add(new Paragraph(telefono, fontEmpresa));
+            document.add(new Paragraph(direccion, fontEmpresa));
+
+            // Espacio debajo de la información de la empresa
+            document.add(new Paragraph("\n"));
 
             // Agregar un título al documento
             Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
@@ -87,4 +115,3 @@ public abstract class GeneradorPDF {
         }
     }
 }
-
