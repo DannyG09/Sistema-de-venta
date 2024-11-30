@@ -14,4 +14,21 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>imagenes/Gris y Blanco Moderno Foto Lateral Celular Descuentos Negocio Tu Historia (1).png</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Downloads/Gris%20y%20Blanco%20Moderno%20Foto%20Lateral%20Celular%20Descuentos%20Negocio%20Tu%20Historia%20(1).png</locationURI>
+		</link>
+		<link>
+			<name>imagenes/Logo de D&apos;guerrero (1).png</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Downloads/Logo%20de%20D&apos;guerrero%20(1).png</locationURI>
+		</link>
+		<link>
+			<name>imagenes/iniciar.png</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Downloads/iniciar.png</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

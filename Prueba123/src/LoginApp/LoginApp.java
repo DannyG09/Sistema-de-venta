@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import guiapp.Conexion_bdd;
 import guiapp.GuiApp;
 import sistema.PanelClientes;
@@ -15,6 +14,7 @@ import sistema.PanelVenta;
 import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.net.URL;
 
 public class LoginApp {
     public static void main(String[] args) {
@@ -27,11 +27,9 @@ public class LoginApp {
                 }
             }
         } catch (Exception e) {
-            // Si Nimbus no está disponible, se establece un Look and Feel genérico
             try {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             } catch (Exception ex) {
-                // Manejo de excepción en caso de falla
                 ex.printStackTrace();
             }
         }
@@ -52,7 +50,7 @@ public class LoginApp {
 
         // TITULO
         JLabel titleLabel = new JLabel("");
-        titleLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\iniciar.png"));
+        titleLabel.setIcon(loadImageIcon("iniciar.png"));
         titleLabel.setForeground(new Color(255, 255, 255));
         titleLabel.setBounds(314, 67, 200, 71);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -98,13 +96,13 @@ public class LoginApp {
         // Imagen lateral izquierda
         JLabel lblNewLabel = new JLabel("");
         lblNewLabel.setForeground(new Color(51, 51, 51));
-        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Gris y Blanco Moderno Foto Lateral Celular Descuentos Negocio Tu Historia (1).png"));
+        lblNewLabel.setIcon(loadImageIcon("Gris y Blanco Moderno Foto Lateral Celular Descuentos Negocio Tu Historia (1).png"));
         lblNewLabel.setBounds(0, 0, 224, 449);
         frame.getContentPane().add(lblNewLabel);
-        
+
         // Logo en la esquina superior derecha
         JLabel lblNewLabel_1 = new JLabel("");
-        lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).png"));
+        lblNewLabel_1.setIcon(loadImageIcon("Logo de D'guerrero (1).png"));
         lblNewLabel_1.setBounds(611, 0, 165, 129);
         frame.getContentPane().add(lblNewLabel_1);
 
@@ -185,5 +183,25 @@ public class LoginApp {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
+    }
+
+    private static ImageIcon loadImageIcon(String fileName) {
+        URL resource = getResourcePath(fileName);
+        if (resource != null) {
+            return new ImageIcon(resource);
+        } else {
+            System.err.println("Error: No se pudo cargar la imagen: " + fileName);
+            return null;
+        }
+    }
+
+    private static URL getResourcePath(String fileName) {
+        URL resource = LoginApp.class.getClassLoader().getResource(fileName);
+        if (resource == null) {
+            System.err.println("No se encontró el recurso: " + fileName);
+        } else {
+            System.out.println("Recurso cargado correctamente: " + fileName);
+        }
+        return resource;
     }
 }
