@@ -1,38 +1,56 @@
 package Funcionalidad;
 
-import java.util.Date;
-
 public class Venta {
-    private int id;
-    private Producto producto;
+    private int codigoProducto;
+    private String producto;
+    private String categoria;
+    private int clienteId;
     private int cantidad;
+    private double precio;
     private double total;
-    private Date fecha;
 
     // Constructor
-    public Venta(int id, Producto producto, int cantidad, double total, Date fecha) {
-        this.id = id;
+    public Venta(int codigoProducto, String producto, String categoria, int clienteId, int cantidad, double precio, double total) {
+        this.codigoProducto = codigoProducto;
         this.producto = producto;
+        this.categoria = categoria;
+        this.clienteId = clienteId;
         this.cantidad = cantidad;
+        this.precio = precio;
         this.total = total;
-        this.fecha = fecha;
     }
 
     // Getters y Setters
-    public int getId() {
-        return id;
+    public int getCodigoProducto() {
+        return codigoProducto;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCodigoProducto(int codigoProducto) {
+        this.codigoProducto = codigoProducto;
     }
 
-    public Producto getProducto() {
+    public String getProducto() {
         return producto;
     }
 
-    public void setProducto(Producto producto) {
+    public void setProducto(String producto) {
         this.producto = producto;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public int getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(int clienteId) {
+        this.clienteId = clienteId;
     }
 
     public int getCantidad() {
@@ -43,19 +61,19 @@ public class Venta {
         this.cantidad = cantidad;
     }
 
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
     public double getTotal() {
         return total;
     }
 
     public void setTotal(double total) {
         this.total = total;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
     }
 }

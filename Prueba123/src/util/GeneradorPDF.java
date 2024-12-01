@@ -1,3 +1,4 @@
+
 package util;
 
 import com.itextpdf.text.*;
@@ -13,7 +14,7 @@ public abstract class GeneradorPDF {
     private String rnc = "RNC 123456789";
     private String telefono = "Tel: 809-123-4567";
     private String direccion = "Dirección: Calle 123, Ciudad, País";
-    private String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).jpg"; // Ruta del logo
+    private String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).png"; // Ruta del logo
 
     // Método abstracto para obtener el modelo de la tabla
     protected abstract TableModel getModeloTabla();

@@ -1,4 +1,4 @@
-package sistema;
+ package sistema;
 
 import guiapp.Conexion_bdd;
 import javax.swing.*;

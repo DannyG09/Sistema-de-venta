@@ -1,39 +1,29 @@
 package Funcionalidad;
 
 public class Proveedor {
-    private String rnc;
+    private int id;
     private String nombre;
     private String telefono;
-    private String direccion;
-    private String razonSocial;
+    private String email;
 
-    public Proveedor(String rnc, String nombre, String telefono, String direccion, String razonSocial) {
-        this.rnc = rnc;
+    public Proveedor(int id, String nombre, String telefono, String email) {
+        this.id = id;
         this.nombre = nombre;
         this.telefono = telefono;
-        this.direccion = direccion;
-        this.razonSocial = razonSocial;
+        this.email = email;
     }
 
-    public String getNombre() {
-        return nombre;
+    public Proveedor(String nombre, String telefono, String email) {
+        this(0, nombre, telefono, email);
     }
 
-    public String getRNC() {
-        return rnc;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public String getRazonSocial() {
-        return razonSocial;
-    }
-
-    // Agregar setters si es necesario
+    // Getters y setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

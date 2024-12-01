@@ -1,24 +1,29 @@
 package sistema;
 
-import guiapp.Conexion_bdd;
+import Funcionalidad.Proveedor;
+import Funcionalidad.ProveedorDAO;
+import Funcionalidad.ProveedorDAOImpl;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
+import java.util.List;
 
 public class PanelProveedor extends JPanel {
     private static final long serialVersionUID = 1L;
+
     private JTextField txtNombreProveedor, txtTelefonoProveedor, txtEmailProveedor;
     private JTable tableProveedores;
     private DefaultTableModel modeloTablaProveedores;
     private JButton btnGuardarProveedor, btnActualizarProveedor, btnEliminarProveedor, btnNuevoProveedor;
-    private Connection conn; // Conexión a la base de datos
+
+    private ProveedorDAO proveedorDAO;
 
     public PanelProveedor() {
-        conn = Conexion_bdd.getConnection(); // Establecer la conexión a la base de datos
+        proveedorDAO = new ProveedorDAOImpl(); // Usar la implementación de ProveedorDAO
         setLayout(null);
         initializeComponents();
-        cargarProveedores(); // Cargar los proveedores al inicio
+        cargarProveedores();
     }
 
     private void initializeComponents() {
@@ -94,33 +99,25 @@ public class PanelProveedor extends JPanel {
         btnNuevoProveedor.addActionListener(e -> limpiarCampos());
     }
 
-    // Métodos para las acciones
     private void guardarProveedor() {
         if (validarCampos()) {
-            String nombre = txtNombreProveedor.getText();
-            String telefono = txtTelefonoProveedor.getText();
-            String email = txtEmailProveedor.getText();
+            Proveedor proveedor = new Proveedor(
+                    txtNombreProveedor.getText(),
+                    txtTelefonoProveedor.getText(),
+                    txtEmailProveedor.getText()
+            );
 
-            String query = "INSERT INTO proveedores (nombre, telefono, email) VALUES (?, ?, ?)";
-
-            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, nombre);
-                stmt.setString(2, telefono);
-                stmt.setString(3, email);
-
-                int rowsAffected = stmt.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    ResultSet rs = stmt.getGeneratedKeys();
-                    if (rs.next()) {
-                        int id = rs.getInt(1); // Obtener el id generado
-                        modeloTablaProveedores.addRow(new Object[]{id, nombre, telefono, email});
-                        JOptionPane.showMessageDialog(this, "Proveedor guardado correctamente con ID: " + id);
-                        limpiarCampos();
-                    }
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al guardar el proveedor: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            if (proveedorDAO.guardarProveedor(proveedor)) {
+                modeloTablaProveedores.addRow(new Object[]{
+                        proveedor.getId(),
+                        proveedor.getNombre(),
+                        proveedor.getTelefono(),
+                        proveedor.getEmail()
+                });
+                JOptionPane.showMessageDialog(this, "Proveedor guardado correctamente.");
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el proveedor.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -128,30 +125,19 @@ public class PanelProveedor extends JPanel {
     private void actualizarProveedor() {
         int selectedRow = tableProveedores.getSelectedRow();
         if (selectedRow >= 0) {
-            int id = (Integer) modeloTablaProveedores.getValueAt(selectedRow, 0);
-            String nombre = txtNombreProveedor.getText();
-            String telefono = txtTelefonoProveedor.getText();
-            String email = txtEmailProveedor.getText();
+            Proveedor proveedor = new Proveedor(
+                    (int) modeloTablaProveedores.getValueAt(selectedRow, 0),
+                    txtNombreProveedor.getText(),
+                    txtTelefonoProveedor.getText(),
+                    txtEmailProveedor.getText()
+            );
 
-            String query = "UPDATE proveedores SET nombre = ?, telefono = ?, email = ? WHERE id = ?";
-
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, nombre);
-                stmt.setString(2, telefono);
-                stmt.setString(3, email);
-                stmt.setInt(4, id);
-
-                int rowsAffected = stmt.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    modeloTablaProveedores.setValueAt(nombre, selectedRow, 1);
-                    modeloTablaProveedores.setValueAt(telefono, selectedRow, 2);
-                    modeloTablaProveedores.setValueAt(email, selectedRow, 3);
-                    JOptionPane.showMessageDialog(this, "Proveedor actualizado.");
-                    limpiarCampos();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al actualizar el proveedor: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            if (proveedorDAO.actualizarProveedor(proveedor)) {
+                cargarProveedores();
+                JOptionPane.showMessageDialog(this, "Proveedor actualizado correctamente.");
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar el proveedor.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un proveedor para actualizar.");
@@ -161,29 +147,36 @@ public class PanelProveedor extends JPanel {
     private void eliminarProveedor() {
         int selectedRow = tableProveedores.getSelectedRow();
         if (selectedRow >= 0) {
-            int id = (Integer) modeloTablaProveedores.getValueAt(selectedRow, 0);
+            int id = (int) modeloTablaProveedores.getValueAt(selectedRow, 0);
 
-            String query = "DELETE FROM proveedores WHERE id = ?";
-
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, id);
-
-                int rowsAffected = stmt.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    modeloTablaProveedores.removeRow(selectedRow);
-                    JOptionPane.showMessageDialog(this, "Proveedor eliminado.");
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el proveedor: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            if (proveedorDAO.eliminarProveedor(id)) {
+                modeloTablaProveedores.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, "Proveedor eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el proveedor.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un proveedor para eliminar.");
         }
     }
 
+    private void cargarProveedores() {
+        modeloTablaProveedores.setRowCount(0);
+        List<Proveedor> proveedores = proveedorDAO.obtenerTodosLosProveedores();
+        for (Proveedor proveedor : proveedores) {
+            modeloTablaProveedores.addRow(new Object[]{
+                    proveedor.getId(),
+                    proveedor.getNombre(),
+                    proveedor.getTelefono(),
+                    proveedor.getEmail()
+            });
+        }
+    }
+
     private boolean validarCampos() {
-        if (txtNombreProveedor.getText().isEmpty() || txtTelefonoProveedor.getText().isEmpty() || txtEmailProveedor.getText().isEmpty()) {
+        if (txtNombreProveedor.getText().isEmpty() ||
+            txtTelefonoProveedor.getText().isEmpty() ||
+            txtEmailProveedor.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -194,22 +187,5 @@ public class PanelProveedor extends JPanel {
         txtNombreProveedor.setText("");
         txtTelefonoProveedor.setText("");
         txtEmailProveedor.setText("");
-    }
-
-    private void cargarProveedores() {
-        String query = "SELECT * FROM proveedores";
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                modeloTablaProveedores.addRow(new Object[]{
-                        rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("telefono"),
-                        rs.getString("email")
-                });
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar los proveedores: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

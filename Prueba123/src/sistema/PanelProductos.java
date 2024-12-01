@@ -1,36 +1,35 @@
 package sistema;
 
-import guiapp.Conexion_bdd;
+import Funcionalidad.Producto;
+import Funcionalidad.ProductoDAO;
+import Funcionalidad.ProductoDAOImpl;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.awt.Color;
-import java.awt.Font;
+import java.util.List;
 
 public class PanelProductos extends JPanel {
     private static final long serialVersionUID = 1L;
+
     private JTextField txtNombreProducto, txtPrecioProducto, txtStockProducto;
     private JTable tableProductos;
     private DefaultTableModel modeloTablaProductos;
-    private JButton btnGuardarProducto, btnEliminarProducto;
-    private Connection conn;
-    private JComboBox<String> comboCategoriaProducto; // Cambiar JTextField a JComboBox
+    private JButton btnGuardarProducto, btnEliminarProducto, btnActualizarStock, btnActualizarProducto;
+    private JComboBox<String> comboCategoriaProducto;
+
+    private ProductoDAO productoDAO;
 
     public PanelProductos() {
-        conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
+        productoDAO = new ProductoDAOImpl(); // Instancia de la implementación de ProductoDAO
         setLayout(null);
         initializeComponents();
         cargarProductos(); // Cargar datos iniciales en la tabla
     }
 
     private void initializeComponents() {
-
         JLabel lblNombreProducto = new JLabel("Nombre:");
         lblNombreProducto.setFont(new Font("Times New Roman", Font.ITALIC, 13));
         lblNombreProducto.setBounds(40, 123, 80, 14);
@@ -55,7 +54,6 @@ public class PanelProductos extends JPanel {
         txtNombreProducto.setBounds(130, 120, 120, 30);
         add(txtNombreProducto);
 
-        // JComboBox para Categoría
         comboCategoriaProducto = new JComboBox<>(new String[]{"Celulares", "Apple Watch", "Tablets", "Laptops"});
         comboCategoriaProducto.setBounds(130, 159, 120, 30);
         add(comboCategoriaProducto);
@@ -68,34 +66,41 @@ public class PanelProductos extends JPanel {
         txtStockProducto.setBounds(130, 239, 120, 30);
         add(txtStockProducto);
 
-        // Tabla
         modeloTablaProductos = new DefaultTableModel(new String[]{"Código", "Nombre", "Categoría", "Precio", "Stock"}, 0);
         tableProductos = new JTable(modeloTablaProductos);
         JScrollPane scrollPaneProductos = new JScrollPane(tableProductos);
         scrollPaneProductos.setBounds(280, 83, 464, 270);
         add(scrollPaneProductos);
 
-     // Botón de guardar
         btnGuardarProducto = new JButton("Guardar");
         btnGuardarProducto.setBounds(38, 293, 90, 23);
-        btnGuardarProducto.setBackground(new Color(34, 139, 34)); // Fondo verde
-        btnGuardarProducto.setForeground(Color.WHITE); // Texto blanco
+        btnGuardarProducto.setBackground(new Color(34, 139, 34));
+        btnGuardarProducto.setForeground(Color.WHITE);
         add(btnGuardarProducto);
 
-        // Botón de eliminar
         btnEliminarProducto = new JButton("Eliminar");
         btnEliminarProducto.setBounds(138, 293, 90, 23);
-        btnEliminarProducto.setBackground(new Color(255, 99, 71)); // Fondo rojo
-        btnEliminarProducto.setForeground(Color.WHITE); // Texto blanco
+        btnEliminarProducto.setBackground(new Color(255, 99, 71));
+        btnEliminarProducto.setForeground(Color.WHITE);
         add(btnEliminarProducto);
 
-        
-        JLabel lblNewLabel = new JLabel("Agregar Nuevos Productos");
+        btnActualizarStock = new JButton("Actualizar Stock");
+        btnActualizarStock.setBounds(38, 330, 140, 23);
+        btnActualizarStock.setBackground(new Color(70, 130, 180));
+        btnActualizarStock.setForeground(Color.WHITE);
+        add(btnActualizarStock);
+
+        btnActualizarProducto = new JButton("Actualizar Producto");
+        btnActualizarProducto.setBounds(190, 330, 140, 23);
+        btnActualizarProducto.setBackground(new Color(70, 130, 180));
+        btnActualizarProducto.setForeground(Color.WHITE);
+        add(btnActualizarProducto);
+
+        JLabel lblNewLabel = new JLabel("Administrar Productos");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
         lblNewLabel.setBounds(233, 33, 269, 23);
         add(lblNewLabel);
 
-        // Acción del botón de guardar
         btnGuardarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -103,84 +108,50 @@ public class PanelProductos extends JPanel {
             }
         });
 
-        // Acción del botón de eliminar
         btnEliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 eliminarProducto();
             }
         });
+
+        btnActualizarStock.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarStock();
+            }
+        });
+
+        btnActualizarProducto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarProducto();
+            }
+        });
     }
 
     private void guardarProducto() {
         if (validarCampos()) {
-            String nombre = txtNombreProducto.getText();
-            String categoria = (String) comboCategoriaProducto.getSelectedItem(); // Obtener selección del ComboBox
-            double precio = Double.parseDouble(txtPrecioProducto.getText());
-            int stock = Integer.parseInt(txtStockProducto.getText());
+            Producto producto = new Producto(
+                    txtNombreProducto.getText(),
+                    (String) comboCategoriaProducto.getSelectedItem(),
+                    Double.parseDouble(txtPrecioProducto.getText()),
+                    Integer.parseInt(txtStockProducto.getText())
+            );
 
-            String query = "INSERT INTO productos (nombre, categoria, precio, stock) VALUES (?, ?, ?, ?)";
-
-            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, nombre);
-                stmt.setString(2, categoria);
-                stmt.setDouble(3, precio);
-                stmt.setInt(4, stock);
-
-                int rowsAffected = stmt.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    ResultSet rs = stmt.getGeneratedKeys();
-                    if (rs.next()) {
-                        int id = rs.getInt(1);  // Obtener el id generado
-                        modeloTablaProductos.addRow(new Object[]{id, nombre, categoria, precio, stock});  // Usar 'id' en lugar de 'codigo'
-                        JOptionPane.showMessageDialog(this, "Producto guardado correctamente con ID: " + id);
-                        limpiarCampos();
-                    }
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al guardar el producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private boolean validarCampos() {
-        if (txtNombreProducto.getText().isEmpty() || txtPrecioProducto.getText().isEmpty() || txtStockProducto.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        try {
-            Double.parseDouble(txtPrecioProducto.getText());
-            Integer.parseInt(txtStockProducto.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Precio y Stock deben ser numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
-    }
-
-    private void limpiarCampos() {
-        txtNombreProducto.setText("");
-        comboCategoriaProducto.setSelectedIndex(0); // Reiniciar al primer elemento
-        txtPrecioProducto.setText("");
-        txtStockProducto.setText("");
-    }
-
-    private void cargarProductos() {
-        String query = "SELECT * FROM productos";
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
+            if (productoDAO.guardarProducto(producto)) {
                 modeloTablaProductos.addRow(new Object[]{
-                        rs.getInt("id"),            // Cambiar 'codigo' por 'id'
-                        rs.getString("nombre"),
-                        rs.getString("categoria"),
-                        rs.getDouble("precio"),
-                        rs.getInt("stock")
+                        producto.getId(),
+                        producto.getNombre(),
+                        producto.getCategoria(),
+                        producto.getPrecio(),
+                        producto.getStock()
                 });
+                JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar los productos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -189,25 +160,100 @@ public class PanelProductos extends JPanel {
         if (selectedRow != -1) {
             int idProducto = (int) modeloTablaProductos.getValueAt(selectedRow, 0);
 
-            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de eliminar este producto?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-            if (confirmacion == JOptionPane.YES_OPTION) {
-                String query = "DELETE FROM productos WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                    stmt.setInt(1, idProducto);
-                    int rowsAffected = stmt.executeUpdate();
-
-                    if (rowsAffected > 0) {
-                        modeloTablaProductos.removeRow(selectedRow);
-                        JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al eliminar el producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+            if (productoDAO.eliminarProducto(idProducto)) {
+                modeloTablaProductos.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona un producto para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void actualizarProducto() {
+        int selectedRow = tableProductos.getSelectedRow();
+        if (selectedRow != -1) {
+            Producto producto = new Producto(
+                    (int) modeloTablaProductos.getValueAt(selectedRow, 0),
+                    txtNombreProducto.getText(),
+                    (String) comboCategoriaProducto.getSelectedItem(),
+                    Double.parseDouble(txtPrecioProducto.getText()),
+                    Integer.parseInt(txtStockProducto.getText())
+            );
+
+            if (productoDAO.actualizarProducto(producto)) {
+                cargarProductos();
+                JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un producto para actualizar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void actualizarStock() {
+        int selectedRow = tableProductos.getSelectedRow();
+        if (selectedRow != -1) {
+            int idProducto = (int) modeloTablaProductos.getValueAt(selectedRow, 0);
+            String nuevoStockStr = JOptionPane.showInputDialog(this, "Introduce el nuevo stock:", "Actualizar Stock", JOptionPane.PLAIN_MESSAGE);
+
+            if (nuevoStockStr != null && !nuevoStockStr.isEmpty()) {
+                try {
+                    int nuevoStock = Integer.parseInt(nuevoStockStr);
+
+                    Producto producto = new Producto(idProducto, "", "", 0, nuevoStock);
+                    if (productoDAO.actualizarProducto(producto)) {
+                        cargarProductos();
+                        JOptionPane.showMessageDialog(this, "Stock actualizado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "El stock debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un producto para actualizar el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargarProductos() {
+        modeloTablaProductos.setRowCount(0);
+        List<Producto> productos = productoDAO.obtenerTodosLosProductos();
+        for (Producto producto : productos) {
+            modeloTablaProductos.addRow(new Object[]{
+                    producto.getId(),
+                    producto.getNombre(),
+                    producto.getCategoria(),
+                    producto.getPrecio(),
+                    producto.getStock()
+            });
+        }
+    }
+
+    private void limpiarCampos() {
+        txtNombreProducto.setText("");
+        comboCategoriaProducto.setSelectedIndex(0);
+        txtPrecioProducto.setText("");
+        txtStockProducto.setText("");
+    }
+
+    private boolean validarCampos() {
+        if (txtNombreProducto.getText().isEmpty() ||
+                txtPrecioProducto.getText().isEmpty() ||
+                txtStockProducto.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        try {
+            Double.parseDouble(txtPrecioProducto.getText());
+            Integer.parseInt(txtStockProducto.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Precio y Stock deben ser números válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 }

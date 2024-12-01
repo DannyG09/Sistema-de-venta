@@ -31,7 +31,6 @@ public class PanelConfiguracion extends JPanel {
         return txtDireccion.getText().trim();
     }
 
-
     public PanelConfiguracion() {
         conn = Conexion_bdd.getConnection(); // Conexión a la base de datos
         setLayout(null);
@@ -149,14 +148,17 @@ public class PanelConfiguracion extends JPanel {
 
     // Método para cargar los datos de la configuración desde la base de datos
     private void cargarDatosConfiguracion() {
-        String query = "SELECT rnc, nombre_empresa, telefono, direccion FROM Configuracion LIMIT 2";
+        String query = "SELECT rnc, nombre_empresa, telefono, direccion FROM Configuracion LIMIT 1";
         
         try (PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
+                System.out.println("Cargando datos...");
                 txtRnc.setText(rs.getString("rnc"));
                 txtNombreEmpresa.setText(rs.getString("nombre_empresa"));
                 txtTelefono.setText(rs.getString("telefono"));
                 txtDireccion.setText(rs.getString("direccion"));
+            } else {
+                System.out.println("No hay datos para cargar.");
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar la configuración: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
