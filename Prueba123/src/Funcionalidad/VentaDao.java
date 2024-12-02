@@ -8,4 +8,5 @@ public interface VentaDao {
     void eliminarVenta(int codigoProducto) throws SQLException;
     List<Venta> getAllVentas() throws SQLException;
     List<Venta> obtenerVentas() throws SQLException;  // Método que falta
+	boolean insertar(Venta nuevaVenta);
 }

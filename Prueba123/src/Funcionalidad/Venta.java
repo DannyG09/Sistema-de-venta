@@ -10,14 +10,19 @@ public class Venta {
     private double total;
 
     // Constructor
-    public Venta(int codigoProducto, String producto, String categoria, int clienteId, int cantidad, double precio, double total) {
+    public Venta(int codigoProducto, String producto, String categoria, int clienteId, int cantidad, double precio) {
         this.codigoProducto = codigoProducto;
         this.producto = producto;
         this.categoria = categoria;
         this.clienteId = clienteId;
         this.cantidad = cantidad;
         this.precio = precio;
-        this.total = total;
+        this.total = calcularTotal();  // Método para calcular el total
+    }
+
+    // Método para calcular el total
+    public double calcularTotal() {
+        return cantidad * precio;
     }
 
     // Getters y Setters

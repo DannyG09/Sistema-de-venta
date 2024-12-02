@@ -224,7 +224,6 @@ public class PanelVenta extends JPanel {
             JOptionPane.showMessageDialog(this, "Error al cargar los datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
     private void registrarVenta() {
         try {
             // Validar campos básicos
@@ -238,6 +237,13 @@ public class PanelVenta extends JPanel {
             int cantidad = Integer.parseInt(textFieldCantidad.getText());
             if (cantidad <= 0) {
                 JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validar que la cantidad no supere el stock
+            int stock = Integer.parseInt(textFieldStock.getText());
+            if (cantidad > stock) {
+                JOptionPane.showMessageDialog(this, "La cantidad solicitada supera el stock disponible.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -293,6 +299,14 @@ public class PanelVenta extends JPanel {
                     return;
                 }
 
+                // Actualizar el stock del producto
+                String queryActualizarStock = "UPDATE Productos SET stock = stock - ? WHERE id = ?";
+                try (PreparedStatement stmtActualizarStock = conn.prepareStatement(queryActualizarStock)) {
+                    stmtActualizarStock.setInt(1, cantidad);
+                    stmtActualizarStock.setString(2, textFielNombredeprocto.getText());
+                    stmtActualizarStock.executeUpdate();
+                }
+
                 // Agregar la venta al modelo de la tabla
                 modeloTablaVenta.addRow(new Object[] {
                     textFielNombredeprocto.getText(),   // Código del Producto
@@ -309,8 +323,12 @@ public class PanelVenta extends JPanel {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al registrar la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores válidos en los campos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+
     
 
 

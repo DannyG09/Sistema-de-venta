@@ -11,7 +11,7 @@ public class Conexion_bdd {
     private static final String PASSWORD = "Danny0905";
     private static Connection conn;
 
-    // Método para establecer conexión
+    // Método para establecer conexión  
     public static Connection getConnection() {
         if (conn == null) { // Usamos singleton para que haya una sola conexión
             try {
