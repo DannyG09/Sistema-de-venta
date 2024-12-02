@@ -1,4 +1,3 @@
-
 package util;
 
 import com.itextpdf.text.*;
@@ -10,10 +9,10 @@ import java.io.FileOutputStream;
 public abstract class GeneradorPDF {
 
     // Información de la empresa
-    private String nombreEmpresa = "Nombre de la Empresa";
+    private String nombreEmpresa = "D'Guerrero Technology";
     private String rnc = "RNC 123456789";
     private String telefono = "Tel: 809-123-4567";
-    private String direccion = "Dirección: Calle 123, Ciudad, País";
+    private String direccion = "Dirección: Calle 5W, Santo Domingo, RD";
     private String rutaLogo = "C:\\Users\\danny_noso1ht\\Downloads\\Logo de D'guerrero (1).png"; // Ruta del logo
 
     // Método abstracto para obtener el modelo de la tabla
